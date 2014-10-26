@@ -2,8 +2,8 @@ package bookings;
 
 public class Seat {
 
-    //@ invariant row >= 'A';
-    //@ invariant number >= 0;
+    //@ invariant row >= MIN_ROW;
+    //@ invariant number >= MIN_NUMBER;
 
     public static final char MIN_ROW = 'A';
     public static final char MAX_ROW = 'G';
