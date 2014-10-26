@@ -102,6 +102,7 @@ public class SeatReservationManager {
         ensures \result >= Seat.MIN_ROW;
     @*/
     private static char indexToRow(int index) {
+        //@ assume (char)(Seat.MIN_ROW + index) >= Seat.MIN_ROW;
         return (char)(Seat.MIN_ROW + index);
     }
 
