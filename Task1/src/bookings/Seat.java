@@ -13,19 +13,19 @@ public class Seat {
     private final char row;
     private final int number;
     
-    //@ requires row >= 'A';
-    //@ requires number >= 0;
+    //@ requires row >= MIN_ROW;
+    //@ requires number >= MIN_NUMBER;
     public Seat(char row, int number) {
         this.row = row;
         this.number = number;
     }
 
-    //@ ensures \result >= 'A';
+    //@ ensures \result >= MIN_ROW;
     public final char getRow() {
         return row;
     }
 
-    //@ ensures \result >= 0;
+    //@ ensures \result >= MIN_NUMBER;
     public final int getNumber() {
         return number;
     }

@@ -98,10 +98,16 @@ public class SeatReservationManager {
         return number - Seat.MIN_NUMBER;
     }
     
+    /*@ requires index >= 0;
+        ensures \result >= Seat.MIN_ROW;
+    @*/
     private static char indexToRow(int index) {
         return (char)(Seat.MIN_ROW + index);
     }
 
+    /*@ requires index >= 0;
+        ensures \result >= Seat.MIN_NUMBER;
+    @*/
     private static int indexToNumber(int index) {
         return index + Seat.MIN_NUMBER;
     }
