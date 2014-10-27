@@ -3,7 +3,12 @@ package bookings;
 public class SeatReservationManager {
     
     //@ non_null
-    //@ invariant \nonnullelements(seatReservations)
+    //@ invariant \nonnullelements(seatReservations);
+    //@ invariant seatReservations.length == Seat.MAX_ROW - Seat.MIN_ROW + 1;
+    /*@ invariant (\forall int x;
+          0 <= x && x < seatReservations.length ==> 
+          seatReservations[x].length == Seat.MAX_NUMBER - Seat.MIN_NUMBER + 1 &&
+          \elemtype(\typeof(seatReservations[x])) == \type(Customer)); @*/
     private final Customer[][] seatReservations;
     
     public SeatReservationManager() {
@@ -15,7 +20,8 @@ public class SeatReservationManager {
         return seatReservations[rowToIndex(s.getRow())]
                                [numberToIndex(s.getNumber())] != null;
     }
-
+ 
+    
     public void reserve(/*@ non_null @*/Seat s, /*@ non_null @*/ Customer c) 
             throws ReservationException {
         if(isReserved(s)) {
@@ -35,7 +41,7 @@ public class SeatReservationManager {
                         [numberToIndex(s.getNumber())] = null;
     }
 
-    public void reserveNextFree(/*@non_null@*/Customer c) throws ReservationException {
+   public void reserveNextFree(/*@non_null@*/Customer c) throws ReservationException {
         for(int rowIndex = 0; rowIndex < seatReservations.length; rowIndex++) {
             for(int numberIndex = 0; 
                     numberIndex < seatReservations[rowIndex].length; 
@@ -84,32 +90,20 @@ public class SeatReservationManager {
         return result;
     }
 
-    /*@ requires row >= Seat.MIN_ROW;
-        ensures \result >= 0;
-    @*/
-    private static int rowToIndex(char row) {
+    private /*@ helper @*/ static int rowToIndex(char row) {
         return row - Seat.MIN_ROW;
     }
 
-    /*@ requires number >= Seat.MIN_NUMBER;
-        ensures \result >= 0;
-    @*/
-    private static int numberToIndex(int number) {
+    private /*@ helper @*/ static int numberToIndex(int number) {
         return number - Seat.MIN_NUMBER;
     }
+   
     
-    /*@ requires index >= 0;
-        ensures \result >= Seat.MIN_ROW;
-    @*/
-    private static char indexToRow(int index) {
-        //@ assume (char)(Seat.MIN_ROW + index) >= Seat.MIN_ROW;
+    private /*@ helper @*/ static char indexToRow(int index) {
         return (char)(Seat.MIN_ROW + index);
     }
 
-    /*@ requires index >= 0;
-        ensures \result >= Seat.MIN_NUMBER;
-    @*/
-    private static int indexToNumber(int index) {
+    private /*@ helper @*/ static int indexToNumber(int index) {
         return index + Seat.MIN_NUMBER;
     }
     
