@@ -3,7 +3,7 @@ source /vol/lab/cs4/SoftwareReliability/coursework1.sh
 
 switch ($#)
   case 0:
-    escjava2 -VCLimit 5000000 -NoCautions -NoWarn Modifies bookings/*.java;
+    escjava2 -VCLimit 5000000 -NoCautions bookings/*.java;
     breaksw
   case 1:
     escjava2 -VCLimit 5000000 -NoCautions -NoWarn Modifies $*;
