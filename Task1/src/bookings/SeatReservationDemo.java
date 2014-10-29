@@ -7,9 +7,8 @@ public class SeatReservationDemo {
 	private static final Random r = new Random();
 	
     public static void main(String[] args) throws ReservationException {
-      SeatReservationManager m = new SeatReservationManager();
-      
       for (int k = 0; k < 10; k++) {
+        SeatReservationManager m = new SeatReservationManager();
         for (int i = 0; i < 50; i++) {
           try {
             m.reserve(getRandomSeat(), new Customer());
