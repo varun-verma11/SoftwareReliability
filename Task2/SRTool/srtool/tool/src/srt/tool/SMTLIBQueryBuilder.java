@@ -1,5 +1,6 @@
 package srt.tool;
 
+import srt.ast.AssertStmt;
 import srt.ast.AssignStmt;
 
 public class SMTLIBQueryBuilder
@@ -20,7 +21,6 @@ public class SMTLIBQueryBuilder
         StringBuilder query = new StringBuilder();
         query.append("(set-logic QF_BV)\n" //
                 + "(declare-sort Int 0)\n" //
-                + "(define-fun tobv32 ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n" //
                 + "(define-fun tobv32 ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n");
         // TODO: Define more functions above (for convenience), as needed.
 
@@ -30,39 +30,53 @@ public class SMTLIBQueryBuilder
         // declare variables
         for (String v : constraints.variableNames)
         {
-            query.append("(declare-fun " + v + " () (BitVec 32))\n");
+            query.append("(declare-fun " + v + " () (_ BitVec 32))\n");
         }
 
-        // add constraints
+        // add constraints for assignment checks
         for (AssignStmt stmt : constraints.transitionNodes)
         {
-            query.append("assert (bv32tobool " + exprConverter.visit(stmt) + "))\n");
+            query.append("(assert (= " + stmt.getLhs().getName() + " " + exprConverter.visit(stmt.getRhs()) + "))\n");
         }
 
-        // add properties
         {
-            String props = "";
-            for (int i = 0; i < constraints.propertyNodes.size(); i++)
+            // add checks for assertions
+            int currentI = 0;
+            for (AssertStmt assertStmt : constraints.propertyNodes)
             {
-                props += "(declare-fun prop" + i + " () (Bool))\n";
+                query.append("(define-fun prop" + currentI + " () Bool (not " + exprConverter.visit(assertStmt.getCondition()) + ") )\n");
+                currentI++;
             }
 
+            // add checks for all the properties.
+            query.append("(assert ");
             for (int i = 0; i < constraints.propertyNodes.size(); i++)
             {
-                props += "(assert  (= prop" + i + " (not (bv32tobool " + exprConverter.visit(constraints.propertyNodes.get(i)) + "))))\n";
+                query.append("(or prop" + i + "");
             }
-
-            props += "(assert (or ";
-            for (int i = 0; i < constraints.propertyNodes.size(); i++)
+            for (int i = 0; i <= constraints.propertyNodes.size(); i++)
             {
-                props += "prop" + i + " ";
+                query.append(")");
             }
-            props = props.trim() + ("))\n"); // performance
-            query.append(props);
+            query.append("\n");
         }
-
         query.append("(check-sat)\n");
+        buildGetValueProperties(query);
         queryString = query.toString();
+    }
+
+    private void buildGetValueProperties(StringBuilder query)
+    {
+        query.append("(get-value (");
+        for (int i = 0; i < constraints.propertyNodes.size(); i++)
+        {
+            query.append("prop" + i);
+            if (i < constraints.propertyNodes.size() - 1)
+            {
+                query.append(" ");
+            }
+        }
+        query.append("))\n\n");
     }
 
     public String getQuery()

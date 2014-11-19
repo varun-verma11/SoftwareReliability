@@ -53,28 +53,28 @@ public class ExprToSmtlibVisitor extends DefaultVisitor
             operator = "(bvsub %s %s)";
             break;
         case BinaryExpr.LAND:
-            operator = "(tobv32 (and (tobool %s) (tobool %s)))";
+            operator = "(and (tobool %s) (tobool %s))";
             break;
         case BinaryExpr.LOR:
-            operator = "(tobv32 (or (tobool %s) (tobool %s)))";
+            operator = "(or (tobool %s) (tobool %s))";
             break;
         case BinaryExpr.GEQ:
-            operator = "(tobv32 (bvsge %s %s))";
+            operator = "(bvsge %s %s)";
             break;
         case BinaryExpr.GT:
-            operator = "(tobv32 (bvsgt %s %s))";
+            operator = "(bvsgt %s %s)";
             break;
         case BinaryExpr.LEQ:
-            operator = "(tobv32 (bvsle %s %s))";
+            operator = "(bvsle %s %s)";
             break;
         case BinaryExpr.LT:
-            operator = "(tobv32 (bvslt %s %s))";
+            operator = "(bvslt %s %s)";
             break;
         case BinaryExpr.NEQUAL:
-            operator = "(tobv32 (not (= %s %s)))";
+            operator = "(not (= %s %s))";
             break;
         case BinaryExpr.EQUAL:
-            operator = "(tobv32 (= %s %s))";
+            operator = "(= %s %s)";
             break;
         default:
             throw new IllegalArgumentException("Invalid binary operator");
