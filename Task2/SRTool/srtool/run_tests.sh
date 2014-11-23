@@ -17,7 +17,7 @@ $TESTER $TOOL tests/loopfree/1_simple $ONLY_REPORT_FAILURES -mode bmc
 
 # Loop-free tests (should work with all modes)
 
-#$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc
+$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc -unsound
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode verifier
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode houdini
