@@ -6,9 +6,9 @@ import java.io.OutputStream;
 
 public class FileUtil {
 	public static Thread copy(final InputStream in, final OutputStream out) {
-		
-		Thread thread  = new Thread(new Runnable() {
-			
+
+		Thread thread = new Thread(new Runnable() {
+
 			@Override
 			public void run() {
 				byte[] buffer = new byte[1024];
@@ -29,7 +29,7 @@ public class FileUtil {
 				}
 			}
 		});
-		
+
 		thread.start();
 		return thread;
 	}

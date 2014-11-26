@@ -40,11 +40,11 @@ public class NodeInfo {
 	public int getCharNumber() {
 		return charNumber;
 	}
-	
-	
+
 	/**
-	 * Sets the original Node.
-	 * Only used by ASTConverter when creating the original Nodes of the AST.
+	 * Sets the original Node. Only used by ASTConverter when creating the
+	 * original Nodes of the AST.
+	 * 
 	 * @param origNode
 	 */
 	void setOrigNode(Node origNode) {

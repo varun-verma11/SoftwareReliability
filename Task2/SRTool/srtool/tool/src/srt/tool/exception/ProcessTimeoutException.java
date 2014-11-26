@@ -1,6 +1,5 @@
 package srt.tool.exception;
 
-
 public class ProcessTimeoutException extends Exception {
 
 	private static final long serialVersionUID = 1L;
@@ -8,5 +7,5 @@ public class ProcessTimeoutException extends Exception {
 	public ProcessTimeoutException(String message) {
 		super(message);
 	}
-	
+
 }

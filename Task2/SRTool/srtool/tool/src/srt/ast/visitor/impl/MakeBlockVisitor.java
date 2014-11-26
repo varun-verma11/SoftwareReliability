@@ -3,33 +3,30 @@ package srt.ast.visitor.impl;
 import srt.ast.*;
 
 /**
- * Visits IfStmt, WhileStmt and changes immediate child Stmts
- * that are not BlockStmt to BlockStmts.<p>
+ * Visits IfStmt, WhileStmt and changes immediate child Stmts that are not
+ * BlockStmt to BlockStmts.
+ * <p>
  * 
- * e.g. if(1) x=1; becomes if(1) { x=1; } else {}<p>
- *
+ * e.g. if(1) x=1; becomes if(1) { x=1; } else {}
+ * <p>
+ * 
  */
 public class MakeBlockVisitor extends DefaultVisitor {
-	
+
 	public MakeBlockVisitor() {
 		super(true);
 	}
 
 	public static BlockStmt getStmtAsBlockStmt(Stmt stmt) {
-		if((stmt == null))
-		{
+		if ((stmt == null)) {
 			return new BlockStmt(new Stmt[] {}, null);
-		}
-		else if(stmt instanceof BlockStmt)
-		{
+		} else if (stmt instanceof BlockStmt) {
 			return (BlockStmt) stmt;
-		}
-		else
-		{
-			return new BlockStmt(new Stmt[] {stmt}, stmt.getNodeInfo());
+		} else {
+			return new BlockStmt(new Stmt[] { stmt }, stmt.getNodeInfo());
 		}
 	}
-	
+
 	@Override
 	public Object visit(IfStmt ifStmt) {
 		Stmt thenStmt = getStmtAsBlockStmt(ifStmt.getThenStmt());
@@ -56,6 +53,4 @@ public class MakeBlockVisitor extends DefaultVisitor {
 		return super.visit(whileStmt);
 	}
 
-	
-	
 }

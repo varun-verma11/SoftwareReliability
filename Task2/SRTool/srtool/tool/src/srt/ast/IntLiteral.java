@@ -6,7 +6,7 @@ public class IntLiteral extends Expr {
 	public IntLiteral(int value) {
 		this(value, null);
 	}
-	
+
 	public IntLiteral(int value, NodeInfo nodeInfo) {
 		super(nodeInfo);
 		this.value = value;
@@ -15,5 +15,5 @@ public class IntLiteral extends Expr {
 	public int getValue() {
 		return value;
 	}
-	
+
 }

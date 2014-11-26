@@ -6,7 +6,7 @@ public class DeclRef extends Expr {
 	public DeclRef(String name) {
 		this(name, null);
 	}
-	
+
 	public DeclRef(String name, NodeInfo nodeInfo) {
 		super(nodeInfo);
 		this.name = name;

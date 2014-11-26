@@ -15,16 +15,15 @@ import srt.ast.Node;
 import srt.ast.visitor.impl.DefaultVisitor;
 
 public class CollectConstraintsVisitor extends DefaultVisitor {
-	
+
 	public Set<String> variableNames = new HashSet<String>();
 	public List<AssignStmt> transitionNodes = new ArrayList<AssignStmt>();
 	public List<AssertStmt> propertyNodes = new ArrayList<AssertStmt>();
-	
-	
+
 	public CollectConstraintsVisitor() {
 		super(false);
 	}
-	
+
 	@Override
 	public Object visit(DeclRef declRef) {
 		variableNames.add(declRef.getName());
@@ -42,9 +41,5 @@ public class CollectConstraintsVisitor extends DefaultVisitor {
 		transitionNodes.add(assignment);
 		return super.visit(assignment);
 	}
-	
+
 }
-
-
-
-

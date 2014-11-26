@@ -8,8 +8,7 @@ public class LoopUnwinderVisitor extends DefaultVisitor {
 	private boolean unsound;
 	private int defaultUnwindBound;
 
-	public LoopUnwinderVisitor(boolean unsound,
-			int defaultUnwindBound) {
+	public LoopUnwinderVisitor(boolean unsound, int defaultUnwindBound) {
 		super(true);
 		this.unsound = unsound;
 		this.defaultUnwindBound = defaultUnwindBound;

@@ -13,7 +13,7 @@ public class Main {
 
 	/**
 	 * @param args
-	 * @throws Exception 
+	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
 		// Parse command line args.
@@ -30,9 +30,9 @@ public class Main {
 			jcommander.usage();
 			System.exit(1);
 		}
-		
+
 		String inputFile = clArgs.files.get(0);
-		
+
 		// Parse input Simple C file to AST.
 		Program p = SimpleCParserUtil.createAST(inputFile);
 
@@ -48,10 +48,10 @@ public class Main {
 		if (!success) {
 			throw checker.getCheckerError();
 		}
-		
+
 		SRTool tool = new SRToolImpl(p, clArgs);
 		SRToolResult result = tool.go();
-		
+
 		// output result: "correct", "incorrect" or "unknown"
 		System.out.println(result.toString().toLowerCase());
 	}

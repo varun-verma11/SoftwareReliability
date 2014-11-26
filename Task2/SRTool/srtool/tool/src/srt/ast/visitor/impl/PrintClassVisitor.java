@@ -3,7 +3,7 @@ package srt.ast.visitor.impl;
 import srt.ast.Node;
 
 public class PrintClassVisitor extends DefaultVisitor {
-	
+
 	public PrintClassVisitor() {
 		super(false);
 	}
@@ -13,5 +13,5 @@ public class PrintClassVisitor extends DefaultVisitor {
 		System.out.println("Visiting " + node.getClass().getName());
 		return super.visit(node);
 	}
-	
+
 }

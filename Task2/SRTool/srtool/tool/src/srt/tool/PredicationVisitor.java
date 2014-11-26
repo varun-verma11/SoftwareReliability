@@ -12,7 +12,7 @@ public class PredicationVisitor extends DefaultVisitor {
 	public PredicationVisitor() {
 		super(true);
 	}
-	
+
 	@Override
 	public Object visit(IfStmt ifStmt) {
 		return super.visit(ifStmt);
