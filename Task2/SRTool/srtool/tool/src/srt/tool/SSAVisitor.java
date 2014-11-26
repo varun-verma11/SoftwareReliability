@@ -37,7 +37,6 @@ public class SSAVisitor extends DefaultVisitor
     public Object visit(DeclRef declRef)
     {
         String name = declRef.getName();
-        // incrementVariableCount(name);
         return new DeclRef(getNameWithIndex(name), declRef.getNodeInfo());
     }
 
