@@ -8,7 +8,10 @@ public class SMTLIBQueryBuilder {
 	private ExprToSmtlibVisitor exprConverter;
 	private CollectConstraintsVisitor constraints;
 	private String queryString = "";
-
+	
+	public static final String TOBOOL = "tobool";
+	public static final String TOBV32 = "tobv32"; 
+	
 	public SMTLIBQueryBuilder(CollectConstraintsVisitor ccv) {
 		this.constraints = ccv;
 		this.exprConverter = new ExprToSmtlibVisitor();
@@ -17,12 +20,8 @@ public class SMTLIBQueryBuilder {
 	public void buildQuery() {
 		StringBuilder query = new StringBuilder();
 		query.append("(set-logic QF_BV)\n" //
-				+ "(define-fun tobool ((p (_ BitVec 32))) Bool (not (= p (_ bv0 32))))\n" //
-				+ "(define-fun tobv32 ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n");
-		// TODO: Define more functions above (for convenience), as needed.
-
-		// TODO: Declare variables, add constraints, add properties to check
-		// here.
+				+ "(define-fun " + TOBOOL + " ((p (_ BitVec 32))) Bool (not (= p (_ bv0 32))))\n" //
+				+ "(define-fun " + TOBV32 + " ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n");
 
 		// declare variables
 		for (String v : constraints.variableNames) {
@@ -40,7 +39,7 @@ public class SMTLIBQueryBuilder {
 			int currentI = 0;
 			for (AssertStmt assertStmt : constraints.propertyNodes) {
 				query.append("(define-fun prop" + currentI
-						+ " () Bool (not (tobool "
+						+ " () Bool (not (" + TOBOOL + " "
 						+ exprConverter.visit(assertStmt.getCondition())
 						+ ")))\n");
 				currentI++;

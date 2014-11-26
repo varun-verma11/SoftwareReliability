@@ -1,5 +1,7 @@
 package srt.tool;
 
+import static srt.tool.SMTLIBQueryBuilder.TOBOOL;
+import static srt.tool.SMTLIBQueryBuilder.TOBV32;
 import srt.ast.BinaryExpr;
 import srt.ast.DeclRef;
 import srt.ast.Expr;
@@ -49,28 +51,28 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 			operator = "(bvsub %s %s)";
 			break;
 		case BinaryExpr.LAND:
-			operator = "(tobv32 (and  %s %s))";
+			operator = "(" + TOBV32 + " (and  %s %s))";
 			break;
 		case BinaryExpr.LOR:
-			operator = "(tobv32 (or %s  %s))";
+			operator = "(" + TOBV32 + " (or %s  %s))";
 			break;
 		case BinaryExpr.GEQ:
-			operator = "(tobv32 (bvsge %s %s))";
+			operator = "(" + TOBV32 + " (bvsge %s %s))";
 			break;
 		case BinaryExpr.GT:
-			operator = "(tobv32 (bvsgt %s %s))";
+			operator = "(" + TOBV32 + " (bvsgt %s %s))";
 			break;
 		case BinaryExpr.LEQ:
-			operator = "(tobv32 (bvsle %s %s))";
+			operator = "(" + TOBV32 + " (bvsle %s %s))";
 			break;
 		case BinaryExpr.LT:
-			operator = "(tobv32 (bvslt %s %s))";
+			operator = "(" + TOBV32 + " (bvslt %s %s))";
 			break;
 		case BinaryExpr.NEQUAL:
-			operator = "(tobv32 (not (= %s %s)))";
+			operator = "(" + TOBV32 + " (not (= %s %s)))";
 			break;
 		case BinaryExpr.EQUAL:
-			operator = "(tobv32 (= %s %s))";
+			operator = "(" + TOBV32 + " (= %s %s))";
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid binary operator");
@@ -108,10 +110,10 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 			operator = "(%s)";
 			break;
 		case UnaryExpr.LNOT:
-			operator = "(tobv32 (not (tobool %s)))";
+			operator = "(" + TOBV32 + " (not (" + TOBOOL + " %s)))";
 			break;
 		case UnaryExpr.BNOT:
-			operator = "(bvnot (tobool %s))";
+			operator = "(bvnot (" + TOBOOL + " %s))";
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid binary operator");
