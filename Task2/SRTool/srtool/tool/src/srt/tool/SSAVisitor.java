@@ -17,7 +17,7 @@ public class SSAVisitor extends DefaultVisitor {
 	}
 
 	/**
-	 * Initialise count for new variable declared
+	 * Initialise count for new variable declared.
 	 */
 	@Override
 	public Object visit(Decl decl) {
@@ -29,7 +29,7 @@ public class SSAVisitor extends DefaultVisitor {
 
 	/**
 	 * Add the incremented variable count to the variable name and then return a
-	 * new DeclRef node
+	 * new DeclRef node.
 	 */
 	@Override
 	public Object visit(DeclRef declRef) {

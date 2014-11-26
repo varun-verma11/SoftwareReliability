@@ -8,10 +8,10 @@ public class SMTLIBQueryBuilder {
 	private ExprToSmtlibVisitor exprConverter;
 	private CollectConstraintsVisitor constraints;
 	private String queryString = "";
-	
+
 	public static final String TOBOOL = "tobool";
-	public static final String TOBV32 = "tobv32"; 
-	
+	public static final String TOBV32 = "tobv32";
+
 	public SMTLIBQueryBuilder(CollectConstraintsVisitor ccv) {
 		this.constraints = ccv;
 		this.exprConverter = new ExprToSmtlibVisitor();
@@ -20,41 +20,43 @@ public class SMTLIBQueryBuilder {
 	public void buildQuery() {
 		StringBuilder query = new StringBuilder();
 		query.append("(set-logic QF_BV)\n" //
-				+ "(define-fun " + TOBOOL + " ((p (_ BitVec 32))) Bool (not (= p (_ bv0 32))))\n" //
-				+ "(define-fun " + TOBV32 + " ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n");
+				+ "(define-fun "
+				+ TOBOOL
+				+ " ((p (_ BitVec 32))) Bool (not (= p (_ bv0 32))))\n" //
+				+ "(define-fun "
+				+ TOBV32
+				+ " ((p Bool)) (_ BitVec 32) (ite p (_ bv1 32) (_ bv0 32)))\n");
 
-		// declare variables
+		// Declare variables.
 		for (String v : constraints.variableNames) {
 			query.append("(declare-fun " + v + " () (_ BitVec 32))\n");
 		}
 
-		// add constraints for assignment checks
+		// Add constraints for assignment checks.
 		for (AssignStmt stmt : constraints.transitionNodes) {
 			query.append("(assert (= " + stmt.getLhs().getName() + " "
 					+ exprConverter.visit(stmt.getRhs()) + "))\n");
 		}
 
-		{
-			// add checks for assertions
-			int currentI = 0;
-			for (AssertStmt assertStmt : constraints.propertyNodes) {
-				query.append("(define-fun prop" + currentI
-						+ " () Bool (not (" + TOBOOL + " "
-						+ exprConverter.visit(assertStmt.getCondition())
-						+ ")))\n");
-				currentI++;
-			}
-
-			// add checks for all the properties.
-			query.append("(assert ");
-			for (int i = 0; i < constraints.propertyNodes.size(); i++) {
-				query.append("(or prop" + i + "");
-			}
-			for (int i = 0; i <= constraints.propertyNodes.size(); i++) {
-				query.append(")");
-			}
-			query.append("\n");
+		// Add checks for assertions.
+		int currentI = 0;
+		for (AssertStmt assertStmt : constraints.propertyNodes) {
+			query.append("(define-fun prop" + currentI + " () Bool (not ("
+					+ TOBOOL + " "
+					+ exprConverter.visit(assertStmt.getCondition()) + ")))\n");
+			currentI++;
 		}
+
+		// Add checks for all the properties.
+		query.append("(assert ");
+		for (int i = 0; i < constraints.propertyNodes.size(); i++) {
+			query.append("(or prop" + i + "");
+		}
+		for (int i = 0; i <= constraints.propertyNodes.size(); i++) {
+			query.append(")");
+		}
+		query.append("\n");
+
 		query.append("(check-sat)\n");
 		buildGetValueProperties(query);
 		queryString = query.toString();

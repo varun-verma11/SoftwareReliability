@@ -39,8 +39,7 @@ public class SRToolImpl implements SRTool {
 		CollectConstraintsVisitor ccv = new CollectConstraintsVisitor();
 		ccv.visit(program);
 
-		// TODO: Convert constraints to SMTLIB String.
-		// Section 4
+		// Convert constraints to SMTLIB String.
 		SMTLIBQueryBuilder builder = new SMTLIBQueryBuilder(ccv);
 		builder.buildQuery();
 
