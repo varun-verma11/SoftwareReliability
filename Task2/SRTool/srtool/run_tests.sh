@@ -19,7 +19,7 @@ TOOL=$TOOL_DIR/srt_run.sh
 # Loop-free tests (should work with all modes)
 
 $TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc
-#$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc -unsound
+$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc -unsound
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode verifier
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode houdini
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode invgen
