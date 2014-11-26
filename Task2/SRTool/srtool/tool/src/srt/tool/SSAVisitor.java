@@ -50,7 +50,10 @@ public class SSAVisitor extends DefaultVisitor {
 	}
 
 	private void incrementVariableCount(String name) {
-		variableCount.put(name, variableCount.get(name) + 1);
+		if (variableCount.containsKey(name))
+			variableCount.put(name, variableCount.get(name) + 1);
+		else
+			variableCount.put(name, 0);
 	}
 
 }

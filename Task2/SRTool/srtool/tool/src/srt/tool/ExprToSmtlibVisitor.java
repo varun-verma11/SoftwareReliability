@@ -51,10 +51,10 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 			operator = "(bvsub %s %s)";
 			break;
 		case BinaryExpr.LAND:
-			operator = "(" + TOBV32 + " (and  %s %s))";
+			operator = "(" + TOBV32 + " (and  (tobool %s) (tobool %s)))";
 			break;
 		case BinaryExpr.LOR:
-			operator = "(" + TOBV32 + " (or %s  %s))";
+			operator = "(" + TOBV32 + " (or (tobool %s)  (tobool %s)))";
 			break;
 		case BinaryExpr.GEQ:
 			operator = "(" + TOBV32 + " (bvsge %s %s))";
@@ -95,8 +95,9 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 
 	@Override
 	public String visit(TernaryExpr ternaryExpr) {
-		return null;
-
+		return "(ite (tobool " + visit(ternaryExpr.getCondition()) + ") "
+				+ visit(ternaryExpr.getTrueExpr()) + " "
+				+ visit(ternaryExpr.getFalseExpr()) + ")";
 	}
 
 	@Override
