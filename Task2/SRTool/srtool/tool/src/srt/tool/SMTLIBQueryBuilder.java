@@ -74,10 +74,6 @@ public class SMTLIBQueryBuilder {
 		appendToQuery("))\n\n");
 	}
 
-	private void appendToQuery(String s) {
-		query.append(s);
-	}
-
 	private void appendToQuery(String s, Object... args) {
 		query.append(String.format(s, args));
 	}
