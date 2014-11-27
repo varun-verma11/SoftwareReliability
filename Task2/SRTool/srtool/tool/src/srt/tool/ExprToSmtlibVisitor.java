@@ -51,10 +51,10 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 			operator = "(bvsub %s %s)";
 			break;
 		case BinaryExpr.LAND:
-			operator = "(" + TOBV32 + " (and  (tobool %s) (tobool %s)))";
+			operator = "(" + TOBV32 + " (and (tobool %s) (tobool %s)))";
 			break;
 		case BinaryExpr.LOR:
-			operator = "(" + TOBV32 + " (or (tobool %s)  (tobool %s)))";
+			operator = "(" + TOBV32 + " (or (tobool %s) (tobool %s)))";
 			break;
 		case BinaryExpr.GEQ:
 			operator = "(" + TOBV32 + " (bvsge %s %s))";
@@ -95,9 +95,10 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 
 	@Override
 	public String visit(TernaryExpr ternaryExpr) {
-		return "(ite (tobool " + visit(ternaryExpr.getCondition()) + ") "
-				+ visit(ternaryExpr.getTrueExpr()) + " "
-				+ visit(ternaryExpr.getFalseExpr()) + ")";
+		return String.format("(ite (%s %s) %s %s)", TOBOOL,
+				visit(ternaryExpr.getCondition()),
+				visit(ternaryExpr.getTrueExpr()),
+				visit(ternaryExpr.getFalseExpr()));
 	}
 
 	@Override
@@ -114,7 +115,7 @@ public class ExprToSmtlibVisitor extends DefaultVisitor {
 			operator = "(" + TOBV32 + " (not (" + TOBOOL + " %s)))";
 			break;
 		case UnaryExpr.BNOT:
-			operator = "(bvnot (" + TOBOOL + " %s))";
+			operator = "(bvnot %s)";
 			break;
 		default:
 			throw new IllegalArgumentException("Invalid binary operator");
