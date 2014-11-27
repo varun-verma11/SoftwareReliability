@@ -47,6 +47,8 @@ public class SMTLIBQueryBuilder {
 	}
 
 	private void handleAssertions() {
+		// If there are no assertions in the program, we need the SAT program
+		// to be unsatisfiable, so we append an artificial assert false.
 		if (constraints.propertyNodes.size() == 0) {
 			appendToQuery("(assert false)\n");
 			return;
