@@ -39,6 +39,19 @@ public class SMTLIBQueryBuilder {
 					exprConverter.visit(stmt.getRhs()));
 		}
 
+		handleAssertions();
+
+		appendToQuery("(check-sat)\n");
+		buildGetValueProperties();
+		queryString = query.toString();
+	}
+
+	private void handleAssertions() {
+		if (constraints.propertyNodes.size() == 0) {
+			appendToQuery("(assert false)\n");
+			return;
+		}
+
 		// Add checks for assertions.
 		int currentI = 0;
 		for (AssertStmt assertStmt : constraints.propertyNodes) {
@@ -49,21 +62,22 @@ public class SMTLIBQueryBuilder {
 		}
 
 		// Add checks for all the properties.
-		appendToQuery("(assert ");
-		for (int i = 0; i < constraints.propertyNodes.size(); i++) {
-			appendToQuery("(or prop%s", String.valueOf(i));
+		if (constraints.propertyNodes.size() > 0) {
+			appendToQuery("(assert ");
+			for (int i = 0; i < constraints.propertyNodes.size(); i++) {
+				appendToQuery("(or prop%s", String.valueOf(i));
+			}
+			for (int i = 0; i <= constraints.propertyNodes.size(); i++) {
+				appendToQuery(")");
+			}
+			appendToQuery("\n");
 		}
-		for (int i = 0; i <= constraints.propertyNodes.size(); i++) {
-			appendToQuery(")");
-		}
-		appendToQuery("\n");
-
-		appendToQuery("(check-sat)\n");
-		buildGetValueProperties();
-		queryString = query.toString();
 	}
 
 	private void buildGetValueProperties() {
+		if (constraints.propertyNodes.size() == 0) {
+			return;
+		}
 		appendToQuery("(get-value (");
 		for (int i = 0; i < constraints.propertyNodes.size(); i++) {
 			appendToQuery("prop%s", String.valueOf(i));

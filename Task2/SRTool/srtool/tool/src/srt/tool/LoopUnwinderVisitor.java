@@ -28,6 +28,7 @@ public class LoopUnwinderVisitor extends DefaultVisitor {
 	@Override
 	public Object visit(WhileStmt whileStmt) {
 		List<Stmt> invariantAssertions = new ArrayList<Stmt>();
+
 		for (Invariant i : whileStmt.getInvariantList().getInvariants()) {
 			if (!i.isCandidate()) {
 				invariantAssertions.add(new AssertStmt(i.getExpr()));
@@ -44,7 +45,7 @@ public class LoopUnwinderVisitor extends DefaultVisitor {
 		IfStmt ifStmt;
 		if (unwindBound == 0) {
 			List<Stmt> ifBlockStmts = new ArrayList<Stmt>();
-			if (unsound) {
+			if (!unsound) {
 				ifBlockStmts.add(new AssertStmt(new IntLiteral(0)));
 			}
 			ifBlockStmts.add(new AssumeStmt(new IntLiteral(0)));

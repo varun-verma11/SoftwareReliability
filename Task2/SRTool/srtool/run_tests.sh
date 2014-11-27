@@ -27,10 +27,10 @@ $TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode bmc -unsound
 #$TESTER $TOOL tests/loopfree $ONLY_REPORT_FAILURES -mode comp
 
 # BMC sound tests
-#$TESTER $TOOL tests/bmc_sound $ONLY_REPORT_FAILURES -mode bmc
+$TESTER $TOOL tests/bmc_sound $ONLY_REPORT_FAILURES -mode bmc
 
 # BMC unsound tests
-#$TESTER $TOOL tests/bmc_unsound $ONLY_REPORT_FAILURES -mode bmc -unsound
+$TESTER $TOOL tests/bmc_unsound $ONLY_REPORT_FAILURES -mode bmc -unsound
 
 # Verifier tests
 #$TESTER $TOOL tests/verifier $ONLY_REPORT_FAILURES -mode verifier
