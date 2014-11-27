@@ -9,6 +9,7 @@ import srt.ast.BlockStmt;
 import srt.ast.EmptyStmt;
 import srt.ast.IfStmt;
 import srt.ast.IntLiteral;
+import srt.ast.Invariant;
 import srt.ast.Stmt;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
@@ -26,23 +27,38 @@ public class LoopUnwinderVisitor extends DefaultVisitor {
 
 	@Override
 	public Object visit(WhileStmt whileStmt) {
+		List<Stmt> invariantAssertions = new ArrayList<Stmt>();
+		for (Invariant i : whileStmt.getInvariantList().getInvariants()) {
+			if (!i.isCandidate()) {
+				invariantAssertions.add(new AssertStmt(i.getExpr()));
+			}
+		}
 		return unwindLoop(whileStmt,
 				whileStmt.getBound() == null ? defaultUnwindBound : whileStmt
-						.getBound().getValue());
+						.getBound().getValue(), invariantAssertions);
 	}
 
-	private Stmt unwindLoop(WhileStmt whileStmt, int unwindBound) {
+	private Stmt unwindLoop(WhileStmt whileStmt, int unwindBound,
+			List<Stmt> invariantAssertions) {
+		List<Stmt> unwindBlockStmts = new ArrayList<Stmt>();
+		IfStmt ifStmt;
 		if (unwindBound == 0) {
-			List<Stmt> stmts = new ArrayList<Stmt>();
+			List<Stmt> ifBlockStmts = new ArrayList<Stmt>();
 			if (unsound) {
-				stmts.add(new AssertStmt(new IntLiteral(0)));
+				ifBlockStmts.add(new AssertStmt(new IntLiteral(0)));
 			}
-			stmts.add(new AssumeStmt(new IntLiteral(0)));
-			return new IfStmt(whileStmt.getCondition(), new BlockStmt(stmts),
-					new EmptyStmt());
+			ifBlockStmts.add(new AssumeStmt(new IntLiteral(0)));
+			ifStmt = new IfStmt(whileStmt.getCondition(), new BlockStmt(
+					ifBlockStmts), new EmptyStmt());
+		} else {
+			ifStmt = new IfStmt(whileStmt.getCondition(), new BlockStmt(
+					new Stmt[] {
+							whileStmt.getBody(),
+							unwindLoop(whileStmt, unwindBound - 1,
+									invariantAssertions) }), new EmptyStmt());
 		}
-		return new IfStmt(whileStmt.getCondition(), new BlockStmt(new Stmt[] {
-				whileStmt.getBody(), unwindLoop(whileStmt, unwindBound - 1) }),
-				new EmptyStmt());
+		unwindBlockStmts.addAll(invariantAssertions);
+		unwindBlockStmts.add(ifStmt);
+		return new BlockStmt(unwindBlockStmts);
 	}
 }
