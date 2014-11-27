@@ -42,12 +42,14 @@ public class PredicationVisitor extends DefaultVisitor {
 				e)));
 		stmts.add(new AssignStmt(branchNotTakenPred, nullSafeAnd(
 				parentPredicate, new UnaryExpr(UnaryExpr.LNOT, e))));
+
 		DeclRef oldParent = parentPredicate;
 		parentPredicate = branchTakenPred;
 		stmts.add((Stmt) visit(ifStmt.getThenStmt()));
 		parentPredicate = branchNotTakenPred;
 		stmts.add((Stmt) visit(ifStmt.getElseStmt()));
 		parentPredicate = oldParent;
+
 		return new BlockStmt(stmts);
 	}
 
