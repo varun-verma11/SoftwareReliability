@@ -10,15 +10,14 @@ import srt.ast.Expr;
 import srt.ast.visitor.impl.DefaultVisitor;
 
 public class SSAVisitor extends DefaultVisitor {
+	/** A map for remembering the SSA renaming count for each variable. */
 	private Map<String, Integer> variableCount = new HashMap<String, Integer>();
 
 	public SSAVisitor() {
 		super(true);
 	}
 
-	/**
-	 * Initialise count for new variable declared.
-	 */
+	/** Places each declared variable in the map, with initial count 0. */
 	@Override
 	public Object visit(Decl decl) {
 		String varName = decl.getName();
@@ -27,22 +26,19 @@ public class SSAVisitor extends DefaultVisitor {
 				decl.getNodeInfo());
 	}
 
-	/**
-	 * Add the incremented variable count to the variable name and then return a
-	 * new DeclRef node.
-	 */
+	/** Performs the SSA renaming. */
 	@Override
 	public Object visit(DeclRef declRef) {
-		String name = declRef.getName();
-		return new DeclRef(getNameWithIndex(name), declRef.getNodeInfo());
+		return new DeclRef(getNameWithIndex(declRef.getName()),
+				declRef.getNodeInfo());
 	}
 
+	/** Increases a variable's renaming index after an assignment into it. */
 	@Override
 	public Object visit(AssignStmt assignment) {
 		Expr rhs = (Expr) this.visit(assignment.getRhs());
 		incrementVariableCount(assignment.getLhs().getName());
-		DeclRef lhs = (DeclRef) this.visit(assignment.getLhs());
-		return new AssignStmt(lhs, rhs);
+		return new AssignStmt((DeclRef) this.visit(assignment.getLhs()), rhs);
 	}
 
 	private String getNameWithIndex(String name) {
@@ -50,10 +46,8 @@ public class SSAVisitor extends DefaultVisitor {
 	}
 
 	private void incrementVariableCount(String name) {
-		if (variableCount.containsKey(name))
-			variableCount.put(name, variableCount.get(name) + 1);
-		else
-			variableCount.put(name, 0);
+		variableCount.put(name,
+				variableCount.containsKey(name) ? variableCount.get(name) + 1
+						: 0);
 	}
-
 }
