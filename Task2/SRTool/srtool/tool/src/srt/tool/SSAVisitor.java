@@ -42,6 +42,9 @@ public class SSAVisitor extends DefaultVisitor {
 	}
 
 	private String getNameWithIndex(String name) {
+		if (!variableCount.containsKey(name)) {
+			incrementVariableCount(name);
+		}
 		return name + '$' + variableCount.get(name);
 	}
 
