@@ -26,8 +26,8 @@ public class SRToolImpl implements SRTool {
 		} else {
 			program = (Program) new LoopAbstractionVisitor().visit(program);
 		}
-		program = (Program) new PredicationVisitor().visit(program);
-		program = (Program) new SSAVisitor().visit(program);
+		// program = (Program) new PredicationVisitor().visit(program);
+		// program = (Program) new SSAVisitor().visit(program);
 
 		// Output the program as text after being transformed (for debugging).
 		if (clArgs.verbose) {

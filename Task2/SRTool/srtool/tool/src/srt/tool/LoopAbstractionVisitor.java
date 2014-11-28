@@ -19,6 +19,7 @@ import srt.ast.Node;
 import srt.ast.Stmt;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
+import srt.util.StmtUtil;
 
 public class LoopAbstractionVisitor extends DefaultVisitor {
 
@@ -29,8 +30,7 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 	@Override
 	public Object visit(WhileStmt whileStmt) {
 		List<Stmt> blockStmts = new ArrayList<Stmt>();
-		List<Invariant> trueInvariants = whileStmt.getTrueInvariants()
-				.getInvariants();
+		List<Invariant> trueInvariants = StmtUtil.getTrueInvariants(whileStmt);
 
 		blockStmts.addAll(assertInvariants(trueInvariants));
 		blockStmts.addAll(havocModset(whileStmt));

@@ -1,7 +1,5 @@
 package srt.ast;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class WhileStmt extends Stmt {
 
@@ -39,25 +37,5 @@ public class WhileStmt extends Stmt {
 
 	public Stmt getBody() {
 		return (Stmt) children.get(3);
-	}
-
-	public InvariantList getCandidateInvariants() {
-		List<Invariant> candInvariants = new ArrayList<Invariant>();
-		for (Invariant i : getInvariantList().getInvariants()) {
-			if (i.isCandidate()) {
-				candInvariants.add(i);
-			}
-		}
-		return new InvariantList(candInvariants);
-	}
-
-	public InvariantList getTrueInvariants() {
-		List<Invariant> candInvariants = new ArrayList<Invariant>();
-		for (Invariant i : getInvariantList().getInvariants()) {
-			if (!i.isCandidate()) {
-				candInvariants.add(i);
-			}
-		}
-		return new InvariantList(candInvariants);
 	}
 }
