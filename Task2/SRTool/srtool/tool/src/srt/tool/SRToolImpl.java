@@ -16,18 +16,28 @@ public class SRToolImpl implements SRTool {
 		this.clArgs = clArgs;
 	}
 
+	public static SRToolResult verify(Program program) {
+		program = (Program) new LoopAbstractionVisitor().visit(program);
+		program = (Program) new PredicationVisitor().visit(program);
+		program = (Program) new SSAVisitor().visit(program);
+		return null;
+	}
+
 	public SRToolResult go() throws IOException, InterruptedException {
 
 		// TODO: Transform program using Visitors here.
 
+		if (clArgs.mode.equals(CLArgs.HOUDINI)) {
+			program = (Program) new CandidateInvariantVisitor().visit(program);
+		}
 		if (clArgs.mode.equals(CLArgs.BMC)) {
 			program = (Program) new LoopUnwinderVisitor(clArgs.unsoundBmc,
 					clArgs.unwindDepth).visit(program);
 		} else {
 			program = (Program) new LoopAbstractionVisitor().visit(program);
 		}
-		// program = (Program) new PredicationVisitor().visit(program);
-		// program = (Program) new SSAVisitor().visit(program);
+		program = (Program) new PredicationVisitor().visit(program);
+		program = (Program) new SSAVisitor().visit(program);
 
 		// Output the program as text after being transformed (for debugging).
 		if (clArgs.verbose) {
