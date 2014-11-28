@@ -16,19 +16,17 @@ public class SRToolImpl implements SRTool {
 		this.clArgs = clArgs;
 	}
 
-	public static SRToolResult verify(Program program) {
-		program = (Program) new LoopAbstractionVisitor().visit(program);
-		program = (Program) new PredicationVisitor().visit(program);
-		program = (Program) new SSAVisitor().visit(program);
-		return null;
-	}
-
 	public SRToolResult go() throws IOException, InterruptedException {
 
 		// TODO: Transform program using Visitors here.
 
+		// You can use other solvers.
+		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
+		// create the process to call z3 solver
+		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
+
 		if (clArgs.mode.equals(CLArgs.HOUDINI)) {
-			program = (Program) new CandidateInvariantVisitor().visit(program);
+			program = new Houdini(program, process, clArgs.timeout).run();
 		}
 		if (clArgs.mode.equals(CLArgs.BMC)) {
 			program = (Program) new LoopUnwinderVisitor(clArgs.unsoundBmc,
@@ -61,9 +59,6 @@ public class SRToolImpl implements SRTool {
 		}
 
 		// Submit query to SMT solver.
-		// You can use other solvers.
-		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
-		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
 		String queryResult = "";
 		try {
 			queryResult = process.execute(smtQuery, clArgs.timeout);
@@ -79,6 +74,10 @@ public class SRToolImpl implements SRTool {
 			System.out.println(queryResult);
 		}
 
+		return parseQueryResult(queryResult);
+	}
+
+	public static SRToolResult parseQueryResult(String queryResult) {
 		if (queryResult.startsWith("unsat")) {
 			return SRToolResult.CORRECT;
 		}
@@ -86,6 +85,7 @@ public class SRToolImpl implements SRTool {
 		if (queryResult.startsWith("sat")) {
 			return SRToolResult.INCORRECT;
 		}
+
 		// query result started with something other than "sat" or "unsat"
 		return SRToolResult.UNKNOWN;
 	}
