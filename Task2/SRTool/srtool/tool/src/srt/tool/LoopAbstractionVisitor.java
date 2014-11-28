@@ -29,7 +29,8 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 	@Override
 	public Object visit(WhileStmt whileStmt) {
 		List<Stmt> blockStmts = new ArrayList<Stmt>();
-		List<Invariant> trueInvariants = getTrueInvariants(whileStmt);
+		List<Invariant> trueInvariants = whileStmt.getTrueInvariants()
+				.getInvariants();
 
 		blockStmts.addAll(assertInvariants(trueInvariants));
 		blockStmts.addAll(havocModset(whileStmt));
@@ -61,16 +62,6 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 			}
 		}
 		return modset;
-	}
-
-	private List<Invariant> getTrueInvariants(WhileStmt whileStmt) {
-		List<Invariant> trueInvariants = new ArrayList<Invariant>();
-		for (Invariant i : whileStmt.getInvariantList().getInvariants()) {
-			if (!i.isCandidate()) {
-				trueInvariants.add(i);
-			}
-		}
-		return trueInvariants;
 	}
 
 	private List<Stmt> havocModset(WhileStmt stmt) {
