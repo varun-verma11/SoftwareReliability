@@ -25,7 +25,11 @@ public class SRToolImpl implements SRTool {
 		// create the process to call z3 solver
 		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
 
-		if (clArgs.mode.equals(CLArgs.HOUDINI)) {
+		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
+		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
+			if (invgenMode) {
+				program = new CandidateInvariantGernator().run(program);
+			}
 			program = new Houdini(program, process, clArgs.timeout).run();
 		}
 		if (clArgs.mode.equals(CLArgs.BMC)) {
