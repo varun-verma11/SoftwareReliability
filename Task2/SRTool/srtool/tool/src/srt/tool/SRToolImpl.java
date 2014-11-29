@@ -26,7 +26,8 @@ public class SRToolImpl implements SRTool {
 		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
 
 		if (clArgs.mode.equals(CLArgs.HOUDINI)) {
-			program = new Houdini(program, process, clArgs.timeout).run();
+			program = (Program) new HoudiniVisitor(program, process,
+					clArgs.timeout).visit(program);
 		}
 		if (clArgs.mode.equals(CLArgs.BMC)) {
 			program = (Program) new LoopUnwinderVisitor(clArgs.unsoundBmc,
