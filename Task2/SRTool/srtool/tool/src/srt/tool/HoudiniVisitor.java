@@ -33,8 +33,8 @@ public class HoudiniVisitor extends DefaultVisitor {
 			// Set candidate invariant to be true invariant.
 			inv.setCandidate(false);
 
-			SRToolResult result = verify(
-					(Program) p.withNewChildren(p.getChildrenCopy()), whileStmt);
+			SRToolResult result = verify((Program) p.withNewChildren(p
+					.getChildrenCopy()));
 			// If the program is incorrect, the candidate invariant is not a
 			// true invariant, so set it back to a candidate.
 			if (result == SRToolResult.INCORRECT) {
@@ -47,7 +47,7 @@ public class HoudiniVisitor extends DefaultVisitor {
 		return whileStmt;
 	}
 
-	private SRToolResult verify(Program program, WhileStmt whileStmt) {
+	private SRToolResult verify(Program program) {
 		program = (Program) new AssertionRemoverVisitor().visit(program);
 		program = (Program) new LoopAbstractionVisitor().visit(program);
 		program = (Program) new PredicationVisitor().visit(program);
