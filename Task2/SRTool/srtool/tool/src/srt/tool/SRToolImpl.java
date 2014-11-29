@@ -30,7 +30,8 @@ public class SRToolImpl implements SRTool {
 			if (invgenMode) {
 				program = new CandidateInvariantGernator().run(program);
 			}
-			program = new Houdini(program, process, clArgs.timeout).run();
+			program = (Program) new HoudiniVisitor(program, process,
+					clArgs.timeout).visit(program);
 		}
 		if (clArgs.mode.equals(CLArgs.BMC)) {
 			program = (Program) new LoopUnwinderVisitor(clArgs.unsoundBmc,
