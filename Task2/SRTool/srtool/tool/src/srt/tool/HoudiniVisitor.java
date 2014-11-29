@@ -7,7 +7,6 @@ import srt.ast.Invariant;
 import srt.ast.Program;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
-import srt.ast.visitor.impl.PrinterVisitor;
 import srt.exec.ProcessExec;
 import srt.tool.SRTool.SRToolResult;
 import srt.tool.exception.ProcessTimeoutException;
@@ -31,17 +30,17 @@ public class HoudiniVisitor extends DefaultVisitor {
 		visit(whileStmt.getBody());
 		List<Invariant> invariants = StmtUtil.getCandidateInvariants(whileStmt);
 		for (Invariant inv : invariants) {
-			// change cand inv to true inv
+			// Set candidate invariant to be true invariant.
 			inv.setCandidate(false);
 
 			SRToolResult result = verify(
 					(Program) p.withNewChildren(p.getChildrenCopy()), whileStmt);
-			// if program is incorrect then set the invariant back to being
-			// candidate
+			// If the program is incorrect, the candidate invariant is not a
+			// true invariant, so set it back to a candidate.
 			if (result == SRToolResult.INCORRECT) {
 				inv.setCandidate(true);
 			} else if (result == SRToolResult.UNKNOWN) {
-				// TODO: need to see what needs to be done for this case
+				// TODO: need to see what needs to be done for this case.
 				return p;
 			}
 		}
@@ -59,12 +58,6 @@ public class HoudiniVisitor extends DefaultVisitor {
 		SMTLIBQueryBuilder builder = new SMTLIBQueryBuilder(ccv);
 		builder.buildQuery();
 
-		String programText = new PrinterVisitor().visit(program);
-		// System.out.println("\n\n\n *************** \n\n" + programText
-		// + "\n\n\n *************** \n\n");
-		// System.out.println("\n\n\n *************** \n\n" + builder.getQuery()
-		// + "\n\n\n *************** \n\n");
-
 		String smtQuery = builder.getQuery();
 		String queryResult = "";
 		try {
@@ -76,8 +69,6 @@ public class HoudiniVisitor extends DefaultVisitor {
 		} catch (InterruptedException e) {
 			return SRToolResult.UNKNOWN;
 		}
-		// System.out.println("\n\n\n *************** \n\n" + queryResult
-		// + "\n\n\n *************** \n\n");
 		return SRToolImpl.parseQueryResult(queryResult);
 	}
 
