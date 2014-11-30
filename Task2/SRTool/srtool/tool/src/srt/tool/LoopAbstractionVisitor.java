@@ -1,12 +1,9 @@
 package srt.tool;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import srt.ast.AssertStmt;
-import srt.ast.AssignStmt;
 import srt.ast.AssumeStmt;
 import srt.ast.BlockStmt;
 import srt.ast.DeclRef;
@@ -15,7 +12,6 @@ import srt.ast.HavocStmt;
 import srt.ast.IfStmt;
 import srt.ast.IntLiteral;
 import srt.ast.Invariant;
-import srt.ast.Node;
 import srt.ast.Stmt;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
@@ -49,24 +45,9 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 		return new BlockStmt(blockStmts);
 	}
 
-	private Set<String> computeModSet(Node node) {
-		Set<String> modset = new HashSet<String>();
-		if (node == null) {
-			return modset;
-		}
-		if (node instanceof AssignStmt) {
-			modset.add(((AssignStmt) node).getLhs().getName());
-		} else {
-			for (Node child : node.getChildrenCopy()) {
-				modset.addAll(computeModSet(child));
-			}
-		}
-		return modset;
-	}
-
 	private List<Stmt> havocModset(WhileStmt stmt) {
 		List<Stmt> havocStmts = new ArrayList<Stmt>();
-		for (String variableName : computeModSet(stmt.getBody())) {
+		for (String variableName : StmtUtil.computeModSet(stmt.getBody())) {
 			havocStmts.add(new HavocStmt(new DeclRef(variableName)));
 		}
 		return havocStmts;

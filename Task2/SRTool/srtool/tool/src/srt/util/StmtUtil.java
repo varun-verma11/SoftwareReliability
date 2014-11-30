@@ -1,9 +1,13 @@
 package srt.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
+import srt.ast.AssignStmt;
 import srt.ast.Invariant;
+import srt.ast.Node;
 import srt.ast.WhileStmt;
 
 public class StmtUtil {
@@ -26,5 +30,20 @@ public class StmtUtil {
 			}
 		}
 		return trueInvariants;
+	}
+
+	public static Set<String> computeModSet(Node node) {
+		Set<String> modset = new HashSet<String>();
+		if (node == null) {
+			return modset;
+		}
+		if (node instanceof AssignStmt) {
+			modset.add(((AssignStmt) node).getLhs().getName());
+		} else {
+			for (Node child : node.getChildrenCopy()) {
+				modset.addAll(computeModSet(child));
+			}
+		}
+		return modset;
 	}
 }

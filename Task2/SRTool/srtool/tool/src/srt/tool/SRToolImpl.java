@@ -6,6 +6,7 @@ import srt.ast.Program;
 import srt.ast.visitor.impl.PrinterVisitor;
 import srt.exec.ProcessExec;
 import srt.tool.exception.ProcessTimeoutException;
+import srt.tool.invgen.CandidateInvariantVisitor;
 
 public class SRToolImpl implements SRTool {
 	private Program program;
@@ -28,7 +29,11 @@ public class SRToolImpl implements SRTool {
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
 			if (invgenMode) {
-				program = new CandidateInvariantGenerator().run(program);
+				CandidateInvariantVisitor v = new CandidateInvariantVisitor();
+				program = (Program) v.visit(program);
+				String programText = new PrinterVisitor().visit(program);
+				System.out.println(programText);
+				// program = new CandidateInvariantGenerator().run(program);
 			}
 			program = (Program) new HoudiniVisitor(program, process,
 					clArgs.timeout).visit(program);
