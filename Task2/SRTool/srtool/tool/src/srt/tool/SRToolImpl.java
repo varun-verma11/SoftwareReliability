@@ -31,9 +31,9 @@ public class SRToolImpl implements SRTool {
 			if (invgenMode) {
 				CandidateInvariantVisitor v = new CandidateInvariantVisitor();
 				program = (Program) v.visit(program);
+				// program = new CandidateInvariantGenerator().run(program);
 				String programText = new PrinterVisitor().visit(program);
 				System.out.println(programText);
-				// program = new CandidateInvariantGenerator().run(program);
 			}
 			program = (Program) new HoudiniVisitor(program, process,
 					clArgs.timeout).visit(program);

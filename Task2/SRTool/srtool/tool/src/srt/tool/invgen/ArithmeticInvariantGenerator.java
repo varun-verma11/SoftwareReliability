@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import srt.ast.BinaryExpr;
+import srt.ast.DeclRef;
 import srt.ast.Expr;
 import srt.ast.Invariant;
 
@@ -36,13 +37,30 @@ public class ArithmeticInvariantGenerator {
 			invs.add(createBinaryInvariant(BinaryExpr.LT, lhs, rhs));
 			invs.add(createBinaryInvariant(BinaryExpr.LEQ, lhs, rhs));
 		}
-		System.out.println("***\n\nGenerating " + invs.size()
-				+ " invariants.\n\n***");
+		return invs;
+	}
+
+	public static List<Invariant> generateAssignmentInvariants(
+			String variableName, Expr expr) {
+		List<Invariant> invs = new ArrayList<Invariant>();
+		invs.add(createAssignmentInvariant(BinaryExpr.EQUAL, variableName, expr));
+		invs.add(createAssignmentInvariant(BinaryExpr.NEQUAL, variableName,
+				expr));
+		invs.add(createAssignmentInvariant(BinaryExpr.GEQ, variableName, expr));
+		invs.add(createAssignmentInvariant(BinaryExpr.GT, variableName, expr));
+		invs.add(createAssignmentInvariant(BinaryExpr.LT, variableName, expr));
+		invs.add(createAssignmentInvariant(BinaryExpr.LEQ, variableName, expr));
 		return invs;
 	}
 
 	private static Invariant createBinaryInvariant(int operator, Expr lhs,
 			Expr rhs) {
 		return new Invariant(true, new BinaryExpr(operator, lhs, rhs));
+	}
+
+	private static Invariant createAssignmentInvariant(int operator,
+			String variableName, Expr expr) {
+		return new Invariant(true, new BinaryExpr(operator, new DeclRef(
+				variableName), expr));
 	}
 }
