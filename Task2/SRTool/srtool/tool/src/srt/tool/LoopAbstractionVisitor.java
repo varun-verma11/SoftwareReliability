@@ -49,13 +49,13 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 		return new BlockStmt(blockStmts);
 	}
 
-	private Set<DeclRef> computeModSet(Node node) {
-		Set<DeclRef> modset = new HashSet<DeclRef>();
+	private Set<String> computeModSet(Node node) {
+		Set<String> modset = new HashSet<String>();
 		if (node == null) {
 			return modset;
 		}
 		if (node instanceof AssignStmt) {
-			modset.add(((AssignStmt) node).getLhs());
+			modset.add(((AssignStmt) node).getLhs().getName());
 		} else {
 			for (Node child : node.getChildrenCopy()) {
 				modset.addAll(computeModSet(child));
@@ -66,8 +66,8 @@ public class LoopAbstractionVisitor extends DefaultVisitor {
 
 	private List<Stmt> havocModset(WhileStmt stmt) {
 		List<Stmt> havocStmts = new ArrayList<Stmt>();
-		for (DeclRef declRef : computeModSet(stmt.getBody())) {
-			havocStmts.add(new HavocStmt(declRef));
+		for (String variableName : computeModSet(stmt.getBody())) {
+			havocStmts.add(new HavocStmt(new DeclRef(variableName)));
 		}
 		return havocStmts;
 	}
