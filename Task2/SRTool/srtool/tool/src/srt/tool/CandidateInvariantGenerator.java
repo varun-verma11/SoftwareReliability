@@ -11,6 +11,7 @@ import srt.ast.DeclRef;
 import srt.ast.Invariant;
 import srt.ast.InvariantList;
 import srt.ast.Program;
+import srt.ast.Stmt;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 
@@ -28,15 +29,15 @@ public class CandidateInvariantGenerator {
 			for (String v2 : vars) {
 				if (!v1.equals(v2)) {
 					invariants
-							.add(new Invariant(false, new BinaryExpr(
+							.add(new Invariant(true, new BinaryExpr(
 									BinaryExpr.EQUAL, new DeclRef(v1),
 									new DeclRef(v2))));
-					invariants.add(new Invariant(false,
+					invariants.add(new Invariant(true,
 							new BinaryExpr(BinaryExpr.NEQUAL, new DeclRef(v1),
 									new DeclRef(v2))));
-					invariants.add(new Invariant(false, new BinaryExpr(
+					invariants.add(new Invariant(true, new BinaryExpr(
 							BinaryExpr.GT, new DeclRef(v1), new DeclRef(v2))));
-					invariants.add(new Invariant(false, new BinaryExpr(
+					invariants.add(new Invariant(true, new BinaryExpr(
 							BinaryExpr.LT, new DeclRef(v1), new DeclRef(v2))));
 				}
 			}
@@ -67,8 +68,9 @@ public class CandidateInvariantGenerator {
 			// to objects from global list so could fail in Houdini
 			List<Invariant> invList = stmt.getInvariantList().getInvariants();
 			invList.addAll(invariants);
+			Stmt body = (Stmt) visit(stmt.getBody());
 			return new WhileStmt(stmt.getCondition(), stmt.getBound(),
-					new InvariantList(invList), stmt.getBody());
+					new InvariantList(invList), body);
 		}
 	}
 
