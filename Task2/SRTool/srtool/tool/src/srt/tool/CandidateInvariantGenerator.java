@@ -1,6 +1,7 @@
 package srt.tool;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -9,24 +10,24 @@ import srt.ast.BinaryExpr;
 import srt.ast.Decl;
 import srt.ast.DeclRef;
 import srt.ast.Invariant;
-import srt.ast.InvariantList;
 import srt.ast.Program;
-import srt.ast.Stmt;
-import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 
 public class CandidateInvariantGenerator {
 
-	private List<Invariant> generateInvariants(Program p) {
+	public List<Invariant> generateInvariants(Program p) {
 		VariablesCollector vc = new VariablesCollector();
 		vc.visit(p);
-		Set<String> vars = vc.getVariables();
+		List<String> vars = Arrays.asList(vc.getVariables().toArray(
+				new String[0]));
 		List<Invariant> invariants = new ArrayList<Invariant>();
 
 		// Add invariants for all possible comparisons for every pair of
 		// variables
-		for (String v1 : vars) {
-			for (String v2 : vars) {
+		for (int i = 0; i < vars.size(); i++) {
+			String v1 = vars.get(i);
+			for (int j = 0; j < i; j++) {
+				String v2 = vars.get(j);
 				if (!v1.equals(v2)) {
 					invariants
 							.add(new Invariant(true, new BinaryExpr(
@@ -43,35 +44,13 @@ public class CandidateInvariantGenerator {
 			}
 		}
 
-		System.out.println("Generated " + invariants.size() + "invariants");
+		System.out.println("Generated " + invariants.size() + " invariants");
 		return invariants;
 	}
 
 	public Program run(Program p) {
 		return (Program) new CandidateInvariantInsertVisitor(
 				generateInvariants(p)).visit(p);
-	}
-
-	private class CandidateInvariantInsertVisitor extends DefaultVisitor {
-
-		private List<Invariant> invariants;
-
-		public CandidateInvariantInsertVisitor(List<Invariant> invariants) {
-			super(true);
-			this.invariants = invariants;
-
-		}
-
-		@Override
-		public Object visit(WhileStmt stmt) {
-			// FIXME: need to check if this works since it will be referencing
-			// to objects from global list so could fail in Houdini
-			List<Invariant> invList = stmt.getInvariantList().getInvariants();
-			invList.addAll(invariants);
-			Stmt body = (Stmt) visit(stmt.getBody());
-			return new WhileStmt(stmt.getCondition(), stmt.getBound(),
-					new InvariantList(invList), body);
-		}
 	}
 
 	private class VariablesCollector extends DefaultVisitor {

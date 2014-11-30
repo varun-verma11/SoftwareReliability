@@ -1,7 +1,9 @@
 package srt.tool;
 
 import java.io.IOException;
+import java.util.List;
 
+import srt.ast.Invariant;
 import srt.ast.Program;
 import srt.ast.visitor.impl.PrinterVisitor;
 import srt.exec.ProcessExec;
@@ -17,13 +19,20 @@ public class SRToolImpl implements SRTool {
 	}
 
 	public SRToolResult go() throws IOException, InterruptedException {
-
+		long start = System.currentTimeMillis();
 		// TODO: Transform program using Visitors here.
 
 		// You can use other solvers.
 		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
 		// create the process to call z3 solver
-		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
+		ProcessExec process = createZ3Process();
+
+		if (clArgs.mode.equals(CLArgs.COMP)) {
+			List<Invariant> invariants = new CandidateInvariantGenerator()
+					.generateInvariants(program);
+			program = new ParallelHoudiniExecutor(clArgs.timeout).run(program,
+					invariants);
+		}
 
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
@@ -78,8 +87,13 @@ public class SRToolImpl implements SRTool {
 		if (clArgs.verbose) {
 			System.out.println(queryResult);
 		}
-
+		System.out.println("Time taken: "
+				+ (System.currentTimeMillis() - start) + "ms");
 		return parseQueryResult(queryResult);
+	}
+
+	public static ProcessExec createZ3Process() {
+		return new ProcessExec("z3", "-smt2", "-in");
 	}
 
 	public static SRToolResult parseQueryResult(String queryResult) {

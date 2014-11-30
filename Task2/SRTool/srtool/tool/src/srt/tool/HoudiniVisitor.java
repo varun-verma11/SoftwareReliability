@@ -47,7 +47,7 @@ public class HoudiniVisitor extends DefaultVisitor {
 		return whileStmt;
 	}
 
-	private SRToolResult verify(Program program) {
+	public SRToolResult verify(Program program) {
 		program = (Program) new AssertionRemoverVisitor().visit(program);
 		program = (Program) new LoopAbstractionVisitor().visit(program);
 		program = (Program) new PredicationVisitor().visit(program);
