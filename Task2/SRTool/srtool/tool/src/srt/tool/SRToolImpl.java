@@ -28,7 +28,7 @@ public class SRToolImpl implements SRTool {
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
 			if (invgenMode) {
-				program = new CandidateInvariantGernator().run(program);
+				program = new CandidateInvariantGenerator().run(program);
 			}
 			program = (Program) new HoudiniVisitor(program, process,
 					clArgs.timeout).visit(program);

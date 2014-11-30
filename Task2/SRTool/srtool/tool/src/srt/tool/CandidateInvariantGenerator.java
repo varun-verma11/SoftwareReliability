@@ -14,7 +14,7 @@ import srt.ast.Program;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 
-public class CandidateInvariantGernator {
+public class CandidateInvariantGenerator {
 
 	private List<Invariant> generateInvariants(Program p) {
 		VariablesCollector vc = new VariablesCollector();
