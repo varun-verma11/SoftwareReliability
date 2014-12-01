@@ -9,10 +9,10 @@ import srt.ast.Invariant;
 import srt.ast.InvariantList;
 import srt.ast.Node;
 import srt.exec.ProcessExec;
-import srt.tool.CandidateInvariantGenerator;
-import srt.tool.CandidateInvariantInsertVisitor;
 import srt.tool.HoudiniVisitor;
 import srt.tool.SRTool.SRToolResult;
+import srt.tool.invgen.VariableComparisonInvariantGenerator;
+import srt.tool.invgen.VariableComparisonInvariantInsertVisitor;
 import srt.tool.SRToolImpl;
 
 public class ParallelHoudiniExecutor {
@@ -28,7 +28,7 @@ public class ParallelHoudiniExecutor {
 	}
 
 	public Node run(Node p) {
-		List<Invariant> invariants = new CandidateInvariantGenerator()
+		List<Invariant> invariants = new VariableComparisonInvariantGenerator()
 				.generateInvariants(p);
 		List<ProgramVerifyRunnable> programVerifiers = new ArrayList<ProgramVerifyRunnable>();
 		ExecutorService executor = Executors.newFixedThreadPool(4);
@@ -45,7 +45,7 @@ public class ParallelHoudiniExecutor {
 		}
 		ranSuccessfully = accumulateAllResult(programVerifiers);
 		InvariantList trueInvariants = getTrueInvariants(invariants);
-		return (Node) new CandidateInvariantInsertVisitor(
+		return (Node) new VariableComparisonInvariantInsertVisitor(
 				trueInvariants.getInvariants()).visit(p);
 	}
 
@@ -91,7 +91,7 @@ public class ParallelHoudiniExecutor {
 		private SRToolResult result;
 
 		public ProgramVerifyRunnable(Node p, List<Invariant> invariants) {
-			this.p = (Node) new CandidateInvariantInsertVisitor(invariants)
+			this.p = (Node) new VariableComparisonInvariantInsertVisitor(invariants)
 					.visit(p);
 		}
 

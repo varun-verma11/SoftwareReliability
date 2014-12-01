@@ -37,6 +37,7 @@ public class HoudiniVisitor extends DefaultVisitor {
 			SRToolResult result = verify(p.withNewChildren(p.getChildrenCopy()));
 			// set result to correct iff no unknown or incorrect result seen so
 			// far, Unknown takes priority over Incorrect
+
 			this.result = (result == SRToolResult.UNKNOWN ? SRToolResult.UNKNOWN
 					: (result == SRToolResult.INCORRECT) ? SRToolResult.INCORRECT
 							: SRToolResult.CORRECT);

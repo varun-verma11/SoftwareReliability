@@ -1,6 +1,7 @@
 package srt.tool.invgen;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -10,6 +11,7 @@ import srt.ast.DeclRef;
 import srt.ast.Expr;
 import srt.ast.Invariant;
 import srt.ast.InvariantList;
+import srt.ast.Program;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 import srt.util.StmtUtil;
@@ -17,10 +19,24 @@ import srt.util.StmtUtil;
 public class CandidateInvariantVisitor extends DefaultVisitor {
 
 	private Map<String, Expr> mostRecentAssignments;
+	private VariableComparisonInvariantGenerator vcig;
 
 	public CandidateInvariantVisitor() {
 		super(true);
 		mostRecentAssignments = new HashMap<String, Expr>();
+	}
+
+	@Override
+	public Object visit(Program program) {
+		// Visit the entire program to compute set of all variable names. Will
+		// be using these for generating loop invariants which compare between
+		// them.
+		VariableNameCollector vnc = new VariableNameCollector();
+		vnc.visit(program);
+		Object[] variableNames = (vnc.getVariables().toArray());
+		vcig = new VariableComparisonInvariantGenerator(Arrays.copyOf(
+				variableNames, variableNames.length, String[].class));
+		return super.visit(program);
 	}
 
 	@Override
@@ -29,6 +45,10 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 
 		// Keep all of the existing invariants.
 		invs.addAll(whileStmt.getInvariantList().getInvariants());
+
+		// Generate invariants obtained from comparing every possible pair of
+		// variables.
+		invs.addAll(vcig.generateInvariants());
 
 		// Generate invariants based solely on the expressions in the loop's
 		// condition.
@@ -44,11 +64,11 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 		// in the loop's modset.
 		invs.addAll(mostRecentAssignmentInvariants(whileStmt));
 
-		// Recursively visit children.
 		WhileStmt visitedResult = (WhileStmt) super.visit(whileStmt);
 
-		return new WhileStmt(whileStmt.getCondition(), whileStmt.getBound(),
-				new InvariantList(invs), visitedResult.getBody());
+		return new WhileStmt(visitedResult.getCondition(),
+				visitedResult.getBound(), new InvariantList(invs),
+				visitedResult.getBody());
 	}
 
 	@Override

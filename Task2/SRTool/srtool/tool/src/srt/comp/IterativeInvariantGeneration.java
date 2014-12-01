@@ -15,13 +15,13 @@ import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 import srt.tool.LoopAbstractionVisitor;
 
-public class IterativeInvariantGernation extends DefaultVisitor {
+public class IterativeInvariantGeneration extends DefaultVisitor {
 
 	private List<Stmt> stmtAccumulator = new ArrayList<Stmt>();
 	private boolean isCorrect = true;
 	private Integer timeout;
 
-	public IterativeInvariantGernation(Integer timeout) {
+	public IterativeInvariantGeneration(Integer timeout) {
 		super(true);
 		this.timeout = timeout;
 	}
@@ -53,7 +53,7 @@ public class IterativeInvariantGernation extends DefaultVisitor {
 	@Override
 	public Object visit(WhileStmt stmt) {
 		System.out.println("Entering While Now!!!");
-		IterativeInvariantGernation bodyVisitor = new IterativeInvariantGernation(
+		IterativeInvariantGeneration bodyVisitor = new IterativeInvariantGeneration(
 				timeout);
 		bodyVisitor.stmtAccumulator.addAll(stmtAccumulator);
 

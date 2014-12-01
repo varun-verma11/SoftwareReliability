@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import srt.ast.Program;
 import srt.ast.visitor.impl.PrinterVisitor;
-import srt.comp.IterativeInvariantGernation;
+import srt.comp.IterativeInvariantGeneration;
 import srt.exec.ProcessExec;
 import srt.tool.exception.ProcessTimeoutException;
 import srt.tool.invgen.CandidateInvariantVisitor;
@@ -30,20 +30,18 @@ public class SRToolImpl implements SRTool {
 		if (clArgs.mode.equals(CLArgs.COMP)) {
 			// program = (Program) new ParallelHoudiniExecutor(clArgs.timeout)
 			// .run(program);
-			IterativeInvariantGernation iterativeInvariantGernation = new IterativeInvariantGernation(clArgs.timeout);
+			IterativeInvariantGeneration iterativeInvariantGernation = new IterativeInvariantGeneration(
+					clArgs.timeout);
 			iterativeInvariantGernation.visit(program);
 		}
 
-		String programText = new PrinterVisitor().visit(program);
-		System.out.println(programText);
+		String programText;
+
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
 			if (invgenMode) {
-				CandidateInvariantVisitor v = new CandidateInvariantVisitor();
-				program = (Program) v.visit(program);
-				program = new CandidateInvariantGenerator().run(program);
-				programText = new PrinterVisitor().visit(program);
-				System.out.println(programText);
+				program = (Program) new CandidateInvariantVisitor()
+						.visit(program);
 			}
 			program = (Program) new HoudiniVisitor(program, process,
 					clArgs.timeout).visit(program);
@@ -54,8 +52,8 @@ public class SRToolImpl implements SRTool {
 		} else {
 			program = (Program) new LoopAbstractionVisitor().visit(program);
 		}
-		// program = (Program) new PredicationVisitor().visit(program);
-		// program = (Program) new SSAVisitor().visit(program);
+		program = (Program) new PredicationVisitor().visit(program);
+		program = (Program) new SSAVisitor().visit(program);
 
 		// Output the program as text after being transformed (for debugging).
 		if (clArgs.verbose) {
