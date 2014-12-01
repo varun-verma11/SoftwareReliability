@@ -46,7 +46,9 @@ public class LoopConditionCollector {
 				addLoopCondition(variableName, binaryExpr);
 			} else {
 				variableName = getVariableName(binaryExpr.getRhs());
-				addLoopCondition(variableName, binaryExpr);
+				if (variableName != null) {
+					addLoopCondition(variableName, binaryExpr);
+				}
 			}
 		}
 

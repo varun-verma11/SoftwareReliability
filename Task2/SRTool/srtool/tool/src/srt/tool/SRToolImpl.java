@@ -25,14 +25,15 @@ public class SRToolImpl implements SRTool {
 		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
 		// create the process to call z3 solver
 		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
-
+		String programText = new PrinterVisitor().visit(program);
+		System.out.println(programText);
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
 			if (invgenMode) {
 				CandidateInvariantVisitor v = new CandidateInvariantVisitor();
 				program = (Program) v.visit(program);
 				// program = new CandidateInvariantGenerator().run(program);
-				String programText = new PrinterVisitor().visit(program);
+				programText = new PrinterVisitor().visit(program);
 				System.out.println(programText);
 			}
 			program = (Program) new HoudiniVisitor(program, process,
@@ -44,12 +45,12 @@ public class SRToolImpl implements SRTool {
 		} else {
 			program = (Program) new LoopAbstractionVisitor().visit(program);
 		}
-		program = (Program) new PredicationVisitor().visit(program);
-		program = (Program) new SSAVisitor().visit(program);
+		// program = (Program) new PredicationVisitor().visit(program);
+		// program = (Program) new SSAVisitor().visit(program);
 
 		// Output the program as text after being transformed (for debugging).
 		if (clArgs.verbose) {
-			String programText = new PrinterVisitor().visit(program);
+			programText = new PrinterVisitor().visit(program);
 			System.out.println(programText);
 		}
 
