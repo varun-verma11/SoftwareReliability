@@ -34,8 +34,11 @@ public class LoopUnwinderVisitor extends DefaultVisitor {
 				invariantAssertions.add(new AssertStmt(i.getExpr()));
 			}
 		}
-		return unwindLoop(whileStmt,
-				whileStmt.getBound() == null ? defaultUnwindBound : whileStmt
+		Stmt result = (Stmt) visit(whileStmt.getBody());
+		WhileStmt newStmt = new WhileStmt(whileStmt.getCondition(),
+				whileStmt.getBound(), whileStmt.getInvariantList(), result);
+		return unwindLoop(newStmt,
+				newStmt.getBound() == null ? defaultUnwindBound : newStmt
 						.getBound().getValue(), invariantAssertions);
 	}
 
