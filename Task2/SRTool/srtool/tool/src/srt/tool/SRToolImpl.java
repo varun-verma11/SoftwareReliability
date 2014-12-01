@@ -19,7 +19,6 @@ public class SRToolImpl implements SRTool {
 	}
 
 	public SRToolResult go() throws IOException, InterruptedException {
-		long start = System.currentTimeMillis();
 		// You can use other solvers.
 		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
 		// create the process to call z3 solver
@@ -87,8 +86,6 @@ public class SRToolImpl implements SRTool {
 		if (clArgs.verbose) {
 			System.out.println(queryResult);
 		}
-		System.out.println("Time taken: "
-				+ (System.currentTimeMillis() - start) + "ms");
 		return parseQueryResult(queryResult);
 	}
 
