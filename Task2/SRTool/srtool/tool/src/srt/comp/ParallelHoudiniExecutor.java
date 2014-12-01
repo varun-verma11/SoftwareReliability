@@ -9,7 +9,6 @@ import srt.ast.Invariant;
 import srt.ast.InvariantList;
 import srt.ast.Node;
 import srt.exec.ProcessExec;
-import srt.tool.CandidateInvariantGenerator;
 import srt.tool.CandidateInvariantInsertVisitor;
 import srt.tool.HoudiniVisitor;
 import srt.tool.SRTool.SRToolResult;
@@ -28,8 +27,7 @@ public class ParallelHoudiniExecutor {
 	}
 
 	public Node run(Node p) {
-		List<Invariant> invariants = new CandidateInvariantGenerator()
-				.generateInvariants(p);
+		List<Invariant> invariants = InvariantCollectorVisitor.run(p);
 		List<ProgramVerifyRunnable> programVerifiers = new ArrayList<ProgramVerifyRunnable>();
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 		for (List<Invariant> invList : splitInvariantList(invariants)) {
