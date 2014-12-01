@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import srt.ast.Invariant;
-import srt.ast.Program;
+import srt.ast.Node;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 import srt.exec.ProcessExec;
@@ -14,11 +14,12 @@ import srt.util.StmtUtil;
 
 public class HoudiniVisitor extends DefaultVisitor {
 
-	private Program p;
+	private Node p;
 	private ProcessExec process;
 	private Integer timeout;
+	private SRToolResult result;
 
-	public HoudiniVisitor(Program p, ProcessExec process, Integer timeout) {
+	public HoudiniVisitor(Node p, ProcessExec process, Integer timeout) {
 		super(true);
 		this.p = p;
 		this.process = process;
@@ -33,8 +34,12 @@ public class HoudiniVisitor extends DefaultVisitor {
 			// Set candidate invariant to be true invariant.
 			inv.setCandidate(false);
 
-			SRToolResult result = verify((Program) p.withNewChildren(p
-					.getChildrenCopy()));
+			SRToolResult result = verify(p.withNewChildren(p.getChildrenCopy()));
+			// set result to correct iff no unknown or incorrect result seen so
+			// far, Unknown takes priority over Incorrect
+			this.result = (result == SRToolResult.UNKNOWN ? SRToolResult.UNKNOWN
+					: (result == SRToolResult.INCORRECT) ? SRToolResult.INCORRECT
+							: SRToolResult.CORRECT);
 			// If the program is incorrect, the candidate invariant is not a
 			// true invariant, so set it back to a candidate.
 			if (result == SRToolResult.INCORRECT) {
@@ -47,11 +52,11 @@ public class HoudiniVisitor extends DefaultVisitor {
 		return whileStmt;
 	}
 
-	private SRToolResult verify(Program program) {
-		program = (Program) new AssertionRemoverVisitor().visit(program);
-		program = (Program) new LoopAbstractionVisitor().visit(program);
-		program = (Program) new PredicationVisitor().visit(program);
-		program = (Program) new SSAVisitor().visit(program);
+	public SRToolResult verify(Node program) {
+		program = (Node) new AssertionRemoverVisitor().visit(program);
+		program = (Node) new LoopAbstractionVisitor().visit(program);
+		program = (Node) new PredicationVisitor().visit(program);
+		program = (Node) new SSAVisitor().visit(program);
 
 		CollectConstraintsVisitor ccv = new CollectConstraintsVisitor();
 		ccv.visit(program);
@@ -70,6 +75,10 @@ public class HoudiniVisitor extends DefaultVisitor {
 			return SRToolResult.UNKNOWN;
 		}
 		return SRToolImpl.parseQueryResult(queryResult);
+	}
+
+	public SRToolResult getResult() {
+		return result;
 	}
 
 }

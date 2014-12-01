@@ -1,48 +1,53 @@
 package srt.tool;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import srt.ast.AssignStmt;
 import srt.ast.BinaryExpr;
-import srt.ast.Decl;
 import srt.ast.DeclRef;
 import srt.ast.Invariant;
-import srt.ast.InvariantList;
+import srt.ast.Node;
 import srt.ast.Program;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 
 public class CandidateInvariantGenerator {
 
-	private List<Invariant> generateInvariants(Program p) {
-		VariablesCollector vc = new VariablesCollector();
+	private VariablesCollector vc = new VariablesCollector();
+
+	public List<Invariant> generateInvariants(Node p) {
 		vc.visit(p);
-		Set<String> vars = vc.getVariables();
+		List<String> vars = Arrays.asList(vc.getVariables().toArray(
+				new String[0]));
 		List<Invariant> invariants = new ArrayList<Invariant>();
 
 		// Add invariants for all possible comparisons for every pair of
 		// variables
-		for (String v1 : vars) {
-			for (String v2 : vars) {
+		for (int i = 0; i < vars.size(); i++) {
+			String v1 = vars.get(i);
+			for (int j = 0; j < i; j++) {
+				String v2 = vars.get(j);
 				if (!v1.equals(v2)) {
 					invariants
-							.add(new Invariant(false, new BinaryExpr(
+							.add(new Invariant(true, new BinaryExpr(
 									BinaryExpr.EQUAL, new DeclRef(v1),
 									new DeclRef(v2))));
-					invariants.add(new Invariant(false,
+					invariants.add(new Invariant(true,
 							new BinaryExpr(BinaryExpr.NEQUAL, new DeclRef(v1),
 									new DeclRef(v2))));
-					invariants.add(new Invariant(false, new BinaryExpr(
+					invariants.add(new Invariant(true, new BinaryExpr(
 							BinaryExpr.GT, new DeclRef(v1), new DeclRef(v2))));
-					invariants.add(new Invariant(false, new BinaryExpr(
+					invariants.add(new Invariant(true, new BinaryExpr(
 							BinaryExpr.LT, new DeclRef(v1), new DeclRef(v2))));
 				}
 			}
 		}
 
-		System.out.println("Generated " + invariants.size() + "invariants");
+		System.out.println("Generated " + invariants.size() + " invariants");
 		return invariants;
 	}
 
@@ -51,39 +56,28 @@ public class CandidateInvariantGenerator {
 				generateInvariants(p)).visit(p);
 	}
 
-	private class CandidateInvariantInsertVisitor extends DefaultVisitor {
-
-		private List<Invariant> invariants;
-
-		public CandidateInvariantInsertVisitor(List<Invariant> invariants) {
-			super(true);
-			this.invariants = invariants;
-
-		}
-
-		@Override
-		public Object visit(WhileStmt stmt) {
-			// FIXME: need to check if this works since it will be referencing
-			// to objects from global list so could fail in Houdini
-			List<Invariant> invList = stmt.getInvariantList().getInvariants();
-			invList.addAll(invariants);
-			return new WhileStmt(stmt.getCondition(), stmt.getBound(),
-					new InvariantList(invList), stmt.getBody());
-		}
-	}
-
 	private class VariablesCollector extends DefaultVisitor {
 
 		private Set<String> variables = new HashSet<String>();
+		private int loopCount = 0;
 
 		public VariablesCollector() {
 			super(false);
 		}
 
 		@Override
-		public Object visit(Decl stmt) {
-			variables.add(stmt.getName());
+		public Object visit(AssignStmt stmt) {
+			if (loopCount > 0)
+				variables.add(stmt.getLhs().getName());
 			return stmt;
+		}
+
+		@Override
+		public Object visit(WhileStmt stmt) {
+			loopCount++;
+			Object o = super.visit(stmt);
+			loopCount--;
+			return o;
 		}
 
 		@Override
