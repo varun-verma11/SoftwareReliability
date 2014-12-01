@@ -9,7 +9,6 @@ import srt.ast.BlockStmt;
 import srt.ast.Decl;
 import srt.ast.EmptyStmt;
 import srt.ast.IfStmt;
-import srt.ast.Invariant;
 import srt.ast.Stmt;
 import srt.ast.UnaryExpr;
 import srt.ast.WhileStmt;
@@ -77,12 +76,7 @@ public class IterativeInvariantGeneration extends DefaultVisitor {
 			isCorrect = false;
 			return new EmptyStmt();
 		}
-		List<Invariant> invariants = parallelHoudini.getTrueInvariants()
-				.getInvariants();
 		stmt.setInvariantList(parallelHoudini.getTrueInvariants());
-		System.out.println("Got True Invariants: " + invariants.size());
-		System.out.println("Added invs to list: "
-				+ stmt.getInvariantList().getInvariants().size());
 		// Get rid of the loop and add the conditional
 		LoopAbstractionVisitor loopAV = new LoopAbstractionVisitor();
 		List<Stmt> flattenedWhile = ((BlockStmt) loopAV.visit(stmt))

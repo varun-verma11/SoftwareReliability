@@ -20,8 +20,6 @@ public class SRToolImpl implements SRTool {
 
 	public SRToolResult go() throws IOException, InterruptedException {
 		long start = System.currentTimeMillis();
-		// TODO: Transform program using Visitors here.
-
 		// You can use other solvers.
 		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
 		// create the process to call z3 solver

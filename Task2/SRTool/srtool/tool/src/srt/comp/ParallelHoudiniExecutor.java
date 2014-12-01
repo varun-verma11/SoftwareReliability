@@ -45,8 +45,6 @@ public class ParallelHoudiniExecutor {
 		}
 		ranSuccessfully = accumulateAllResult(programVerifiers);
 		trueInvariants = getFilteredTrueInvariants(invariants);
-		System.out.println("Number of true invs: "
-				+ trueInvariants.getInvariants().size());
 		return (Node) new VariableComparisonInvariantInsertVisitor(
 				trueInvariants.getInvariants()).visit(p);
 	}

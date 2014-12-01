@@ -46,7 +46,6 @@ public class HoudiniVisitor extends DefaultVisitor {
 			if (result == SRToolResult.INCORRECT) {
 				inv.setCandidate(true);
 			} else if (result == SRToolResult.UNKNOWN) {
-				// TODO: need to see what needs to be done for this case.
 				return p;
 			}
 		}
