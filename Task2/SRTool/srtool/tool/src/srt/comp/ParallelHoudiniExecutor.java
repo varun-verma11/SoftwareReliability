@@ -11,9 +11,9 @@ import srt.ast.Node;
 import srt.exec.ProcessExec;
 import srt.tool.HoudiniVisitor;
 import srt.tool.SRTool.SRToolResult;
-import srt.tool.invgen.VariableComparisonInvariantGenerator;
-import srt.tool.invgen.VariableComparisonInvariantInsertVisitor;
 import srt.tool.SRToolImpl;
+import srt.tool.invgen.CandidateInvariantVisitor;
+import srt.tool.invgen.VariableComparisonInvariantInsertVisitor;
 
 public class ParallelHoudiniExecutor {
 
@@ -28,8 +28,8 @@ public class ParallelHoudiniExecutor {
 	}
 
 	public Node run(Node p) {
-		List<Invariant> invariants = new VariableComparisonInvariantGenerator()
-				.generateInvariants(p);
+		p = (Node) (new CandidateInvariantVisitor(p).visit(p));
+		List<Invariant> invariants = InvariantCollectorVisitor.run(p);
 		List<ProgramVerifyRunnable> programVerifiers = new ArrayList<ProgramVerifyRunnable>();
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 		for (List<Invariant> invList : splitInvariantList(invariants)) {
@@ -44,7 +44,9 @@ public class ParallelHoudiniExecutor {
 			;
 		}
 		ranSuccessfully = accumulateAllResult(programVerifiers);
-		InvariantList trueInvariants = getTrueInvariants(invariants);
+		trueInvariants = getFilteredTrueInvariants(invariants);
+		System.out.println("Number of true invs: "
+				+ trueInvariants.getInvariants().size());
 		return (Node) new VariableComparisonInvariantInsertVisitor(
 				trueInvariants.getInvariants()).visit(p);
 	}
@@ -65,13 +67,13 @@ public class ParallelHoudiniExecutor {
 		return true;
 	}
 
-	private InvariantList getTrueInvariants(List<Invariant> invariants) {
-		List<Invariant> trueInvariants = new ArrayList<Invariant>();
+	private InvariantList getFilteredTrueInvariants(List<Invariant> invariants) {
+		List<Invariant> trueInvs = new ArrayList<Invariant>();
 		for (Invariant inv : invariants) {
 			if (!inv.isCandidate())
-				trueInvariants.add(inv);
+				trueInvs.add(inv);
 		}
-		return new InvariantList(trueInvariants);
+		return new InvariantList(trueInvs);
 	}
 
 	private static List<List<Invariant>> splitInvariantList(
@@ -91,8 +93,8 @@ public class ParallelHoudiniExecutor {
 		private SRToolResult result;
 
 		public ProgramVerifyRunnable(Node p, List<Invariant> invariants) {
-			this.p = (Node) new VariableComparisonInvariantInsertVisitor(invariants)
-					.visit(p);
+			this.p = (Node) new VariableComparisonInvariantInsertVisitor(
+					invariants).visit(p);
 		}
 
 		@Override

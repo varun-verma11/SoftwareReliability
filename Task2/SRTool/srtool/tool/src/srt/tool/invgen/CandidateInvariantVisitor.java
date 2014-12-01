@@ -11,7 +11,7 @@ import srt.ast.DeclRef;
 import srt.ast.Expr;
 import srt.ast.Invariant;
 import srt.ast.InvariantList;
-import srt.ast.Program;
+import srt.ast.Node;
 import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 import srt.util.StmtUtil;
@@ -21,22 +21,17 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 	private Map<String, Expr> mostRecentAssignments;
 	private VariableComparisonInvariantGenerator vcig;
 
-	public CandidateInvariantVisitor() {
-		super(true);
-		mostRecentAssignments = new HashMap<String, Expr>();
-	}
-
-	@Override
-	public Object visit(Program program) {
+	public CandidateInvariantVisitor(Node program) {
 		// Visit the entire program to compute set of all variable names. Will
 		// be using these for generating loop invariants which compare between
 		// them.
+		super(true);
+		mostRecentAssignments = new HashMap<String, Expr>();
 		VariableNameCollector vnc = new VariableNameCollector();
 		vnc.visit(program);
 		Object[] variableNames = (vnc.getVariables().toArray());
 		vcig = new VariableComparisonInvariantGenerator(Arrays.copyOf(
 				variableNames, variableNames.length, String[].class));
-		return super.visit(program);
 	}
 
 	@Override

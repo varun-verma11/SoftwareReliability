@@ -12,7 +12,9 @@ void main()
   b=0;
   c=0;
   d=0;
-  while(c<100)
+  e=0;
+  f=0;
+  while(b<100)
   {
     a = a+1;
     b = b+1;
@@ -22,18 +24,19 @@ void main()
       c = c+1;
     }
   }
-  assert(b==c);
-  
+
   e=0;
   f=0;
   while(e<100)
   {
     e = e+1;
+    f=0;
     while(f<100)
     {
       f = f+1;
     }
   }
+
 }
 
 

@@ -33,7 +33,6 @@ public class VariableComparisonInvariantGenerator {
 			for (int j = 0; j < i; j++) {
 				String v2 = variableNames[j];
 				if (!v1.equals(v2)) {
-					System.out.println(String.format("%s and %s", v1, v2));
 					invariants.addAll(ArithmeticInvariantGenerator
 							.generateComparisonInvariants(new DeclRef(v1),
 									new DeclRef(v2)));
