@@ -1,11 +1,10 @@
 package srt.tool;
 
 import java.io.IOException;
-import java.util.List;
 
-import srt.ast.Invariant;
 import srt.ast.Program;
 import srt.ast.visitor.impl.PrinterVisitor;
+import srt.comp.IterativeInvariantGernation;
 import srt.exec.ProcessExec;
 import srt.tool.exception.ProcessTimeoutException;
 
@@ -28,10 +27,10 @@ public class SRToolImpl implements SRTool {
 		ProcessExec process = createZ3Process();
 
 		if (clArgs.mode.equals(CLArgs.COMP)) {
-			List<Invariant> invariants = new CandidateInvariantGenerator()
-					.generateInvariants(program);
-			program = new ParallelHoudiniExecutor(clArgs.timeout).run(program,
-					invariants);
+			// program = (Program) new ParallelHoudiniExecutor(clArgs.timeout)
+			// .run(program);
+			IterativeInvariantGernation iterativeInvariantGernation = new IterativeInvariantGernation(clArgs.timeout);
+			iterativeInvariantGernation.visit(program);
 		}
 
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);

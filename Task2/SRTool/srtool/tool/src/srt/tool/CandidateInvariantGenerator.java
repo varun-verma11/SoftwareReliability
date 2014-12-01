@@ -6,17 +6,20 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import srt.ast.AssignStmt;
 import srt.ast.BinaryExpr;
-import srt.ast.Decl;
 import srt.ast.DeclRef;
 import srt.ast.Invariant;
+import srt.ast.Node;
 import srt.ast.Program;
+import srt.ast.WhileStmt;
 import srt.ast.visitor.impl.DefaultVisitor;
 
 public class CandidateInvariantGenerator {
 
-	public List<Invariant> generateInvariants(Program p) {
-		VariablesCollector vc = new VariablesCollector();
+	private VariablesCollector vc = new VariablesCollector();
+
+	public List<Invariant> generateInvariants(Node p) {
 		vc.visit(p);
 		List<String> vars = Arrays.asList(vc.getVariables().toArray(
 				new String[0]));
@@ -56,15 +59,25 @@ public class CandidateInvariantGenerator {
 	private class VariablesCollector extends DefaultVisitor {
 
 		private Set<String> variables = new HashSet<String>();
+		private int loopCount = 0;
 
 		public VariablesCollector() {
 			super(false);
 		}
 
 		@Override
-		public Object visit(Decl stmt) {
-			variables.add(stmt.getName());
+		public Object visit(AssignStmt stmt) {
+			if (loopCount > 0)
+				variables.add(stmt.getLhs().getName());
 			return stmt;
+		}
+
+		@Override
+		public Object visit(WhileStmt stmt) {
+			loopCount++;
+			Object o = super.visit(stmt);
+			loopCount--;
+			return o;
 		}
 
 		@Override
