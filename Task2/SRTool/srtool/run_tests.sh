@@ -1,6 +1,6 @@
 #!/bin/sh
 
-ONLY_REPORT_FAILURES=0
+ONLY_REPORT_FAILURES=1
 
 
 # TOOL_DIR should be set to the directory of srt_run.sh.
