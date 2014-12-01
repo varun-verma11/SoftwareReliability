@@ -97,8 +97,6 @@ public class ParallelHoudiniExecutor {
 
 		@Override
 		public void run() {
-			// System.out.println("\n\n\n*****Program Text*****\n"
-			// + new PrinterVisitor().visit(p) + "\n\n******\n");
 			ProcessExec process = SRToolImpl.createZ3Process();
 			HoudiniVisitor houdiniVisitor = new HoudiniVisitor(p, process,
 					timeout);
