@@ -30,7 +30,6 @@ public class ParallelHoudiniExecutor {
 	public Node run(Node p) {
 		p = (Node) (new CandidateInvariantVisitor(p).visit(p));
 		List<Invariant> invariants = InvariantCollectorVisitor.run(p);
-		System.out.println("Invariants Generated: " + invariants.size());
 		List<ProgramVerifyRunnable> programVerifiers = new ArrayList<ProgramVerifyRunnable>();
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 		for (List<Invariant> invList : splitInvariantList(invariants)) {
@@ -45,7 +44,9 @@ public class ParallelHoudiniExecutor {
 			;
 		}
 		ranSuccessfully = accumulateAllResult(programVerifiers);
-		InvariantList trueInvariants = getTrueInvariants(invariants);
+		trueInvariants = getFilteredTrueInvariants(invariants);
+		System.out.println("Number of true invs: "
+				+ trueInvariants.getInvariants().size());
 		return (Node) new VariableComparisonInvariantInsertVisitor(
 				trueInvariants.getInvariants()).visit(p);
 	}
@@ -66,13 +67,13 @@ public class ParallelHoudiniExecutor {
 		return true;
 	}
 
-	private InvariantList getTrueInvariants(List<Invariant> invariants) {
-		List<Invariant> trueInvariants = new ArrayList<Invariant>();
+	private InvariantList getFilteredTrueInvariants(List<Invariant> invariants) {
+		List<Invariant> trueInvs = new ArrayList<Invariant>();
 		for (Invariant inv : invariants) {
 			if (!inv.isCandidate())
-				trueInvariants.add(inv);
+				trueInvs.add(inv);
 		}
-		return new InvariantList(trueInvariants);
+		return new InvariantList(trueInvs);
 	}
 
 	private static List<List<Invariant>> splitInvariantList(

@@ -1,7 +1,8 @@
 package srt.ast;
 
-
 public class WhileStmt extends Stmt {
+
+	private static final int INVARIANT_LIST_INDEX = 2;
 
 	public WhileStmt(Expr condition, IntLiteral bound,
 			InvariantList invariants, Stmt body) {
@@ -32,10 +33,14 @@ public class WhileStmt extends Stmt {
 	}
 
 	public InvariantList getInvariantList() {
-		return (InvariantList) children.get(2);
+		return (InvariantList) children.get(INVARIANT_LIST_INDEX);
 	}
 
 	public Stmt getBody() {
 		return (Stmt) children.get(3);
+	}
+
+	public void setInvariantList(InvariantList invariantList) {
+		children.set(INVARIANT_LIST_INDEX, invariantList);
 	}
 }
