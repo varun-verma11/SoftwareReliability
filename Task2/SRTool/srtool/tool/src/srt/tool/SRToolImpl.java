@@ -28,8 +28,6 @@ public class SRToolImpl implements SRTool {
 		ProcessExec process = createZ3Process();
 
 		if (clArgs.mode.equals(CLArgs.COMP)) {
-			// program = (Program) new ParallelHoudiniExecutor(clArgs.timeout)
-			// .run(program);
 			IterativeInvariantGeneration iterativeInvariantGernation = new IterativeInvariantGeneration(
 					clArgs.timeout);
 			iterativeInvariantGernation.visit(program);
@@ -40,7 +38,7 @@ public class SRToolImpl implements SRTool {
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
 		if (clArgs.mode.equals(CLArgs.HOUDINI) || invgenMode) {
 			if (invgenMode) {
-				program = (Program) new CandidateInvariantVisitor()
+				program = (Program) new CandidateInvariantVisitor(program)
 						.visit(program);
 			}
 			program = (Program) new HoudiniVisitor(program, process,

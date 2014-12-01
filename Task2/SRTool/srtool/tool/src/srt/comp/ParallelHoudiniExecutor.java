@@ -12,6 +12,7 @@ import srt.exec.ProcessExec;
 import srt.tool.HoudiniVisitor;
 import srt.tool.SRTool.SRToolResult;
 import srt.tool.SRToolImpl;
+import srt.tool.invgen.CandidateInvariantVisitor;
 import srt.tool.invgen.VariableComparisonInvariantInsertVisitor;
 
 public class ParallelHoudiniExecutor {
@@ -27,7 +28,9 @@ public class ParallelHoudiniExecutor {
 	}
 
 	public Node run(Node p) {
+		p = (Node) (new CandidateInvariantVisitor(p).visit(p));
 		List<Invariant> invariants = InvariantCollectorVisitor.run(p);
+		System.out.println("Invariants Generated: " + invariants.size());
 		List<ProgramVerifyRunnable> programVerifiers = new ArrayList<ProgramVerifyRunnable>();
 		ExecutorService executor = Executors.newFixedThreadPool(4);
 		for (List<Invariant> invList : splitInvariantList(invariants)) {
