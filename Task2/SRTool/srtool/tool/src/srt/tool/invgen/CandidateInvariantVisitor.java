@@ -24,13 +24,18 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 
 	@Override
 	public Object visit(WhileStmt whileStmt) {
-		ArithmeticExpressionExtractor v = new ArithmeticExpressionExtractor();
 		List<Invariant> invs = new ArrayList<Invariant>();
 
+		// Keep any of the existing invariants.
 		invs.addAll(whileStmt.getInvariantList().getInvariants());
-		invs.addAll(v.generateArithmeticCandidates(whileStmt));
-		invs.addAll(mostRecentAssignmentInvariants(whileStmt));
 
+		ArithmeticExpressionExtractor v = new ArithmeticExpressionExtractor();
+		invs.addAll(v.generateArithmeticCandidates(whileStmt));
+
+		// TODO: add the LoopBodyInvariantGenerator here.
+		invs.addAll(LoopBodyInvariantGenerator.generateInvariants(whileStmt));
+
+		invs.addAll(mostRecentAssignmentInvariants(whileStmt));
 		WhileStmt visitedResult = (WhileStmt) super.visit(whileStmt);
 		return new WhileStmt(whileStmt.getCondition(), whileStmt.getBound(),
 				new InvariantList(invs), visitedResult.getBody());
@@ -46,10 +51,7 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 	private List<Invariant> mostRecentAssignmentInvariants(WhileStmt whileStmt) {
 		List<Invariant> mostRecentAssignmentInvariants = new ArrayList<Invariant>();
 		for (String variableName : StmtUtil.computeModSet(whileStmt)) {
-			System.out.println("Testing for variable " + variableName
-					+ " \n\n\n");
 			if (mostRecentAssignments.containsKey(variableName)) {
-				System.out.println("Containzzz\n\n\n\n");
 				mostRecentAssignmentInvariants
 						.addAll(ArithmeticInvariantGenerator
 								.generateAssignmentInvariants(variableName,
