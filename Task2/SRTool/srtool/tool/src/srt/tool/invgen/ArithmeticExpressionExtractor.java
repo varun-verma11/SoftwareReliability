@@ -20,11 +20,11 @@ public class ArithmeticExpressionExtractor {
 				whileStmt);
 		v.visit(whileStmt.getCondition());
 		List<Invariant> candidateInvariants = new ArrayList<Invariant>();
-
-		for (Expr expr : v.getExpr()) {
-			candidateInvariants.addAll(ArithmeticInvariantGenerator
-					.generateInvariants(expr));
-		}
+		//
+		// for (Expr expr : v.getExpr()) {
+		// candidateInvariants.addAll(ArithmeticInvariantGenerator
+		// .generateInvariants(expr));
+		// }
 		return candidateInvariants;
 	}
 

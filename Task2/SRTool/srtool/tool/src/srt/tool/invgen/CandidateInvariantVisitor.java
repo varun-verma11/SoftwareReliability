@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import srt.ast.AssignStmt;
+import srt.ast.DeclRef;
 import srt.ast.Expr;
 import srt.ast.Invariant;
 import srt.ast.InvariantList;
@@ -26,14 +27,14 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 	public Object visit(WhileStmt whileStmt) {
 		List<Invariant> invs = new ArrayList<Invariant>();
 
-		// Keep any of the existing invariants.
+		// Keep all of the existing invariants.
 		invs.addAll(whileStmt.getInvariantList().getInvariants());
 
 		ArithmeticExpressionExtractor v = new ArithmeticExpressionExtractor();
 		invs.addAll(v.generateArithmeticCandidates(whileStmt));
 
-		// TODO: add the LoopBodyInvariantGenerator here.
-		invs.addAll(LoopBodyInvariantGenerator.generateInvariants(whileStmt));
+		invs.addAll(LoopBodyAssignmentsInvariantGenerator
+				.generateInvariants(whileStmt));
 
 		invs.addAll(mostRecentAssignmentInvariants(whileStmt));
 		WhileStmt visitedResult = (WhileStmt) super.visit(whileStmt);
@@ -54,8 +55,9 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 			if (mostRecentAssignments.containsKey(variableName)) {
 				mostRecentAssignmentInvariants
 						.addAll(ArithmeticInvariantGenerator
-								.generateAssignmentInvariants(variableName,
-										mostRecentAssignments.get(variableName)));
+								.generateComparisonInvariants(new DeclRef(
+										variableName), mostRecentAssignments
+										.get(variableName)));
 			}
 		}
 		return mostRecentAssignmentInvariants;
