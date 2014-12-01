@@ -25,6 +25,7 @@ public class SRToolImpl implements SRTool {
 		// E.g. The command for cvc4 is: "cvc4", "--lang", "smt2"
 		// create the process to call z3 solver
 		ProcessExec process = new ProcessExec("z3", "-smt2", "-in");
+
 		String programText = new PrinterVisitor().visit(program);
 		System.out.println(programText);
 		boolean invgenMode = clArgs.mode.equals(CLArgs.INVGEN);
@@ -32,7 +33,7 @@ public class SRToolImpl implements SRTool {
 			if (invgenMode) {
 				CandidateInvariantVisitor v = new CandidateInvariantVisitor();
 				program = (Program) v.visit(program);
-				// program = new CandidateInvariantGenerator().run(program);
+				program = new CandidateInvariantGenerator().run(program);
 				programText = new PrinterVisitor().visit(program);
 				System.out.println(programText);
 			}

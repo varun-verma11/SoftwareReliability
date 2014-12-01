@@ -30,14 +30,23 @@ public class CandidateInvariantVisitor extends DefaultVisitor {
 		// Keep all of the existing invariants.
 		invs.addAll(whileStmt.getInvariantList().getInvariants());
 
-		ArithmeticExpressionExtractor v = new ArithmeticExpressionExtractor();
-		invs.addAll(v.generateArithmeticCandidates(whileStmt));
+		// Generate invariants based solely on the expressions in the loop's
+		// condition.
+		invs.addAll(LoopConditionInvariantGenerator
+				.generateLoopConditionInvariants(whileStmt));
 
+		// Generate invariants based on the expressions in the loop's condition
+		// and assignments encountered in the loop body.
 		invs.addAll(LoopBodyAssignmentsInvariantGenerator
 				.generateInvariants(whileStmt));
 
+		// Generate invariants based on most recent assignments into variables
+		// in the loop's modset.
 		invs.addAll(mostRecentAssignmentInvariants(whileStmt));
+
+		// Recursively visit children.
 		WhileStmt visitedResult = (WhileStmt) super.visit(whileStmt);
+
 		return new WhileStmt(whileStmt.getCondition(), whileStmt.getBound(),
 				new InvariantList(invs), visitedResult.getBody());
 	}

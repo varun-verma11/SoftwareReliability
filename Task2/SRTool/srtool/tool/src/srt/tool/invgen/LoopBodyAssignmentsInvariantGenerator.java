@@ -105,7 +105,10 @@ public class LoopBodyAssignmentsInvariantGenerator {
 		List<Invariant> invs = new ArrayList<Invariant>();
 		for (String varName : intsOccurringInAssignments.keySet()) {
 			for (Integer i : intsOccurringInAssignments.get(varName)) {
-				invs.addAll(generateModularInvariants(varName, i));
+				// Avoid redundant invariants such as 'x mod 1 == 0'.
+				if (i != 1 && i != 0) {
+					invs.addAll(generateModularInvariants(varName, i));
+				}
 			}
 		}
 		return invs;
